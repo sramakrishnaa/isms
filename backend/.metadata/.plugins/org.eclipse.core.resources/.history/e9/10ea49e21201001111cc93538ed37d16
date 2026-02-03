@@ -1,0 +1,16 @@
+spring:
+    application:
+        name: identity-service
+
+    datasource:
+        username: ${DB_USERNAME:root}
+        password: ${DB_PASSWORD:password}
+        url: ${DB_URL}
+
+    jpa:
+        show-sql: true
+        hibernate:
+            ddl-auto: update
+
+server:
+    port: ${SERVER_PORT:8080}

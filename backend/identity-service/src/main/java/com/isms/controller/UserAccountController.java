@@ -28,4 +28,12 @@ public class UserAccountController {
 		return ResponseEntity.status(HttpStatus.CREATED)
 				.body(ApiResponse.success("Account Created Successfully", createdAccount));
 	}
+	
+	@PostMapping("login")
+	public String userLogin(@RequestBody String entity) {
+		//TODO: process POST request
+		
+		return entity;
+	}
+	
 }
