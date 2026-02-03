@@ -2,11 +2,13 @@
 target/
 *.log
 *.class
+
 # ===== Eclipse =====
 .metadata/
 .settings/
 .project
 .classpath
+
 
 # ===== Maven =====
 .mvn/
