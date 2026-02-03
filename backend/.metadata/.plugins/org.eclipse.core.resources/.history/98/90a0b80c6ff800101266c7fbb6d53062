@@ -1,0 +1,5 @@
+package com.isms.reporitory;
+
+public interface TenantRepository {
+
+}

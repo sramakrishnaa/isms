@@ -1,0 +1,26 @@
+package com.isms.service;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+
+import com.isms.dto.RegisterDto;
+import com.isms.entity.UserAccount;
+import com.isms.reporitory.UserAccountRepository;
+
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Service
+public class UserAccountService {
+
+	private final UserAccountRepository accountRepository;
+
+	private final ModelMapper mapper;
+
+	public UserAccount createUser(RegisterDto newUserDetails) {
+		newUserDetails.setEmail(newUserDetails.getEmail().toLowerCase());
+		newUserDetails.setName(newUserDetails.getName().toLowerCase());
+		UserAccount newUserAccount = mapper.map(newUserDetails, UserAccount.class);
+		return accountRepository.save(newUserAccount);
+	}
+}

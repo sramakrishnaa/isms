@@ -1,0 +1,19 @@
+package com.isms.service;
+
+import org.springframework.stereotype.Service;
+
+import com.isms.entity.TenantUser;
+import com.isms.reporitory.TenantRepository;
+
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Service
+public class TenantService {
+
+	private final TenantRepository tenantRepository;
+
+	public TenantUser createUser(TenantUser tenantUser) {
+		return tenantRepository.save(tenantUser);
+	}
+}

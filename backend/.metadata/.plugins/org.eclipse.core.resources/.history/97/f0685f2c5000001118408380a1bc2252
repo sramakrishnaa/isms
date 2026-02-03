@@ -1,0 +1,31 @@
+package com.isms.controller;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.isms.dto.RegisterDto;
+import com.isms.dto.UserResponseDto;
+import com.isms.response.ApiResponse;
+import com.isms.service.UserAccountService;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("/api/auth")
+public class UserAccountController {
+
+	private final UserAccountService accountService;
+
+	@PostMapping("signup")
+	public ResponseEntity<ApiResponse<UserResponseDto>> createUser(@Valid @RequestBody RegisterDto newUserDetails) {
+		UserResponseDto createdAccount = accountService.createUser(newUserDetails);
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body(ApiResponse.success("Account Created Successfully", createdAccount));
+	}
+}

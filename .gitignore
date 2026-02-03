@@ -1,0 +1,26 @@
+# ===== Java / Spring Boot =====
+target/
+*.log
+*.class
+
+# ===== Maven =====
+.mvn/
+!mvnw
+!mvnw.cmd
+
+# ===== Node / Angular =====
+node_modules/
+dist/
+.angular/
+
+# ===== IDE =====
+.idea/
+.vscode/
+*.iml
+
+# ===== OS =====
+.DS_Store
+
+# ===== Secrets =====
+.env
+application-prod.yml

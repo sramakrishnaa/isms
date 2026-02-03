@@ -1,0 +1,161 @@
+/* =========================================================
+   ISMS Utility System (Hybrid: px + rem)
+   - Layout & spacing  : px (Material 8px grid)
+   - Typography        : rem (accessibility)
+   ========================================================= */
+
+/* -------------------------
+   1. Layout & Display
+-------------------------- */
+.block       { display: block; }
+.inline      { display: inline; }
+.inline-flex { display: inline-flex; }
+.flex        { display: flex; }
+.grid        { display: grid; }
+
+.flex-row    { flex-direction: row; }
+.flex-column { flex-direction: column; }
+.flex-wrap   { flex-wrap: wrap; }
+
+.items-start  { align-items: flex-start; }
+.items-center { align-items: center; }
+.items-end    { align-items: flex-end; }
+
+.justify-start   { justify-content: flex-start; }
+.justify-center  { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-end     { justify-content: flex-end; }
+
+/* Gaps (Material 8px grid) */
+.gap-4  { gap: 4px; }
+.gap-8  { gap: 8px; }
+.gap-16 { gap: 16px; }
+.gap-24 { gap: 24px; }
+.gap-32 { gap: 32px; }
+
+/* -------------------------
+   2. Spacing (px-based)
+-------------------------- */
+/* Margin */
+.m-0  { margin: 0; }
+.m-4  { margin: 4px; }
+.m-8  { margin: 8px; }
+.m-16 { margin: 16px; }
+.m-24 { margin: 24px; }
+.m-32 { margin: 32px; }
+
+.mt-8  { margin-top: 8px; }
+.mb-8  { margin-bottom: 8px; }
+.ml-8  { margin-left: 8px; }
+.mr-8  { margin-right: 8px; }
+
+.mt-16 { margin-top: 16px; }
+.mb-16 { margin-bottom: 16px; }
+
+/* Padding */
+.p-0  { padding: 0; }
+.p-4  { padding: 4px; }
+.p-8  { padding: 8px; }
+.p-16 { padding: 16px; }
+.p-24 { padding: 24px; }
+.p-32 { padding: 32px; }
+
+/* -------------------------
+   3. Typography (rem-based)
+-------------------------- */
+/* Font sizes */
+.text-xs { font-size: 0.75rem; }   /* 12px */
+.text-sm { font-size: 0.875rem; }  /* 14px */
+.text-md { font-size: 1rem; }      /* 16px */
+.text-lg { font-size: 1.25rem; }   /* 20px */
+.text-xl { font-size: 1.5rem; }    /* 24px */
+
+/* Font weight */
+.text-regular { font-weight: 400; }
+.text-medium  { font-weight: 500; }
+.text-bold    { font-weight: 600; }
+
+/* Text alignment */
+.text-left   { text-align: left; }
+.text-center { text-align: center; }
+.text-right  { text-align: right; }
+
+/* Text colors (Material-aligned) */
+.text-muted {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.text-danger {
+  color: #d32f2f;
+}
+
+.text-success {
+  color: #388e3c;
+}
+
+.text-warning {
+  color: #f57c00;
+}
+
+/* -------------------------
+   4. Backgrounds & Borders
+-------------------------- */
+.bg-white { background-color: #ffffff; }
+.bg-light { background-color: #f5f5f5; }
+.bg-muted { background-color: #eeeeee; }
+
+.border {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.border-top {
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+/* Border radius (px-based) */
+.rounded-sm { border-radius: 4px; }
+.rounded    { border-radius: 8px; }
+.rounded-lg { border-radius: 12px; }
+
+/* -------------------------
+   5. Shadows (Material elevation)
+-------------------------- */
+.shadow-1 {
+  box-shadow: 0 1px 3px rgba(0,0,0,.12),
+              0 1px 2px rgba(0,0,0,.24);
+}
+
+.shadow-2 {
+  box-shadow: 0 3px 6px rgba(0,0,0,.16),
+              0 3px 6px rgba(0,0,0,.23);
+}
+
+.shadow-3 {
+  box-shadow: 0 10px 20px rgba(0,0,0,.19),
+              0 6px 6px rgba(0,0,0,.23);
+}
+
+/* -------------------------
+   6. Position & Visibility
+-------------------------- */
+.relative { position: relative; }
+.absolute { position: absolute; }
+.fixed    { position: fixed; }
+.sticky   { position: sticky; }
+
+.top-0    { top: 0; }
+.right-0  { right: 0; }
+.bottom-0 { bottom: 0; }
+.left-0   { left: 0; }
+
+.hidden     { display: none !important; }
+.invisible  { visibility: hidden; }
+
+/* -------------------------
+   7. Interaction & Overflow
+-------------------------- */
+.pointer    { cursor: pointer; }
+.no-select  { user-select: none; }
+
+.overflow-hidden { overflow: hidden; }
+.overflow-auto   { overflow: auto; }

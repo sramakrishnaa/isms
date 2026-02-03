@@ -1,0 +1,16 @@
+spring:
+    application:
+        name: identity-service
+
+    datasource:
+        password: krishna
+        username: root
+        url: jdbc:mysql://localhost:3306/auth_db?createDatabaseIfNotExist=true
+
+    jpa:
+        show-sql: true
+        hibernate:
+            ddl-auto: update
+
+server:
+    port: 8080

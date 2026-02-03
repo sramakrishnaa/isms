@@ -1,0 +1,5 @@
+package com.isms.controller;
+
+public class TenantController {
+
+}

@@ -1,0 +1,19 @@
+package com.isms.service;
+
+import org.springframework.stereotype.Service;
+
+import com.isms.entity.UserAccount;
+import com.isms.reporitory.UserAccountRepository;
+
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Service
+public class TenantService {
+
+	private final UserAccountRepository userAccountRepository;
+
+	public UserAccount createUser(UserAccount newUserAccount) {
+		return userAccountRepository.save(newUserAccount);
+	}
+}

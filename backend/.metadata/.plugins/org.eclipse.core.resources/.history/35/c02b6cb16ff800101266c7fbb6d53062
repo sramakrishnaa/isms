@@ -1,0 +1,19 @@
+package com.isms.controller;
+
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.isms.entity.TenantUser;
+
+@RestController
+public class TenantController {
+
+	@PostMapping
+	public void register(@RequestBody TenantUser tenantUser) {
+		
+		
+
+	}
+
+}

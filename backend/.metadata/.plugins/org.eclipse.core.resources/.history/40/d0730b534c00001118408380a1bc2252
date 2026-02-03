@@ -1,0 +1,37 @@
+package com.isms.service;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+
+import com.isms.dto.RegisterDto;
+import com.isms.dto.UserResponseDto;
+import com.isms.entity.UserAccount;
+import com.isms.exception.DuplicateResourceException;
+import com.isms.reporitory.UserAccountRepository;
+
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Service
+public class UserAccountService {
+
+	private final UserAccountRepository accountRepository;
+
+	private final ModelMapper modelMapper;
+
+	public UserResponseDto createUser(RegisterDto dto) {
+
+		String normalizedEmail = dto.getEmail().trim().toLowerCase();
+		if (accountRepository.existsByEmail(normalizedEmail)) {
+			throw new DuplicateResourceException("Email address is already registered");
+		}
+		if (accountRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
+			throw new DuplicateResourceException("Phone number is already registered");
+		}
+		UserAccount user = modelMapper.map(dto, UserAccount.class);
+		user.setEmail(normalizedEmail);
+		user.setPassword(dto.getPassword());
+		UserAccount savedUser = accountRepository.save(user);
+		return modelMapper.map(savedUser, UserResponseDto.class);
+	}
+}

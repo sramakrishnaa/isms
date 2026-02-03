@@ -1,0 +1,30 @@
+.app-container {
+  height: 100vh;
+}
+
+.app-sidenav {
+  width: 240px;
+  border-right: 1px solid #e0e0e0;
+}
+
+.brand {
+  padding: 16px;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.app-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.page-wrapper {
+  padding: 24px;
+  background: #fafafa;
+  min-height: calc(100vh - 64px);
+}
+
+.spacer {
+  flex: 1;
+}
