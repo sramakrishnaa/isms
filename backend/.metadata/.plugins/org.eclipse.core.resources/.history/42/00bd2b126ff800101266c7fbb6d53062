@@ -1,9 +1,0 @@
-package com.isms.reporitory;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import com.isms.entity.TenantUser;
-
-public interface TenantRepository extends JpaRepository<TenantUser, Long>{
-
-}

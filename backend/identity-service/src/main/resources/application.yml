@@ -3,9 +3,9 @@ spring:
         name: identity-service
 
     datasource:
-        password: krishna
-        username: root
-        url: jdbc:mysql://localhost:3306/auth_db?createDatabaseIfNotExist=true
+        username: ${DB_USERNAME:root}
+        password: ${DB_PASSWORD:password}
+        url: ${DB_URL:jdbc:mysql://localhost:3306/auth_db?createDatabaseIfNotExist=true}
 
     jpa:
         show-sql: true
@@ -13,4 +13,4 @@ spring:
             ddl-auto: update
 
 server:
-    port: 8080
+    port: ${SERVER_PORT:8080}
