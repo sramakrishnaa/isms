@@ -1,0 +1,57 @@
+package com.isms.identity.entity;
+
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
+@Table(name = "users", uniqueConstraints = { @UniqueConstraint(columnNames = "email_id"),
+		@UniqueConstraint(columnNames = "user_phone") })
+public class User {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long userId;
+
+	@Column(nullable = false,unique = true, name = "email_id")
+	private String email;
+
+	@Column(nullable = false, name = "user_name")
+	private String name;
+
+	@Column(nullable = false,unique = true, name = "user_phone")
+	private String phoneNumber;
+
+	@JsonIgnore
+	@Column(nullable = false)
+	private String password;
+
+	@CreatedDate
+	private LocalDateTime createDateTime;
+
+	@LastModifiedDate
+	private LocalDateTime updatedDateTime;
+
+}
