@@ -31,10 +31,11 @@ public class AuthController {
 				.body(ApiResponse.success("Account Created Successfully", createdAccount));
 	}
 
-	@PostMapping("signin")
+	@PostMapping("login")
 	public TokenResponse userLogin(@Valid @RequestBody LoginRequest credentials) {
-		System.out.println("ddgfdg");
 		return authService.login(credentials);
 	}
+	
+	
 
 }

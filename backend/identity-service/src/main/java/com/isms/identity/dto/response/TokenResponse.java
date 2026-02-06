@@ -2,6 +2,8 @@ package com.isms.identity.dto.response;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,10 +12,20 @@ import lombok.Setter;
 public class TokenResponse {
 
 	private LocalDateTime timestamp;
-	private String access_token;
 
-	public TokenResponse(String access_token) {
-		this.access_token = access_token;
+    @JsonProperty("access_token")
+    private String accessToken;
+
+    @JsonProperty("token_type")
+    private String tokenType;
+
+    @JsonProperty("expires_in")
+    private long expiresIn;
+
+	public TokenResponse(String accessToken, long expiresIn) {
+		this.accessToken = accessToken;
+		this.expiresIn = expiresIn;
+		this.tokenType = "Bearer";
 		this.timestamp = LocalDateTime.now();
 	}
 

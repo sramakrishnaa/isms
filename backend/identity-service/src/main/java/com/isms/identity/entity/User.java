@@ -1,4 +1,4 @@
-package com.isms.identity.entity;
+ package com.isms.identity.entity;
 
 import java.time.LocalDateTime;
 

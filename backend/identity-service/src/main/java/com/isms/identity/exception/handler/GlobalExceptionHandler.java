@@ -16,9 +16,15 @@ import org.springframework.web.context.request.WebRequest;
 
 import com.isms.identity.common.ApiResponse;
 import com.isms.identity.exception.DuplicateResourceException;
+import com.isms.identity.exception.UserNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+	
+	@ExceptionHandler(UserNotFoundException.class)
+	public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(ex.getMessage()));
+	}
 
 	@ExceptionHandler(AuthenticationException.class)
 	public ResponseEntity<Object> handleAuthenticationException(AuthenticationException ex, WebRequest request) {
@@ -40,17 +46,17 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("Validation failed", errors));
 	}
 
-//	@ExceptionHandler(DataIntegrityViolationException.class)
-//	public ResponseEntity<ApiResponse<String>> handleDataIntegrityViolationException(
-//			DataIntegrityViolationException ex) {
-//		return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error("Duplicate or Invalid Data"));
-//	}
-	
 	@ExceptionHandler(DataIntegrityViolationException.class)
-	public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException exception) {
-		String message = exception.getMostSpecificCause().getLocalizedMessage();
-		return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error(message));
+	public ResponseEntity<ApiResponse<String>> handleDataIntegrityViolationException(
+			DataIntegrityViolationException ex) {
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error("Duplicate or Invalid Data"));
 	}
+	
+//	@ExceptionHandler(DataIntegrityViolationException.class)
+//	public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException exception) {
+//		String message = exception.getMostSpecificCause().getLocalizedMessage();
+//		return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error(message));
+//	}
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ApiResponse<String>> handleGenericException(Exception ex) {

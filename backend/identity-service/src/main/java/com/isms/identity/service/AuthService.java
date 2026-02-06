@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,7 @@ public class AuthService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManager authenticationManager;
-	private final JwtTokenProvider tokenProvider;
+	private final JwtTokenProvider jwtTokenProvider;
 
 	private final ModelMapper modelMapper;
 
@@ -57,14 +58,13 @@ public class AuthService {
 	}
 
 	public TokenResponse login(LoginRequest credentials) {
+		Authentication authentication = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(credentials.getEmail(), credentials.getPassword()));
 
-		try {
-			Authentication authentication = authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(credentials.getEmail(), credentials.getPassword()));
-			System.err.println(authentication.getPrincipal());
-			return new TokenResponse("login success");
-		} catch (Exception e) {
-			throw e;
-		}
+		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		String accessToken = jwtTokenProvider.generateToken(userDetails);
+
+		return new TokenResponse(accessToken,jwtTokenProvider.getExpirySeconds());
 	}
+
 }

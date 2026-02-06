@@ -34,6 +34,10 @@ public class JwtTokenProvider {
 		return extractUsername(token).equals(details.getUsername()) && !isTokenExpired(token);
 	}
 
+	public long getExpirySeconds() {
+		return EXPIRATION;
+	}
+
 	// Helper methods
 	private SecretKey getSigningKey() {
 		return Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
@@ -51,4 +55,5 @@ public class JwtTokenProvider {
 	private boolean isTokenExpired(String token) {
 		return extractClaim(token, Claims::getExpiration).before(new Date());
 	}
+
 }
