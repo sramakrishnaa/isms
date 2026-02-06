@@ -10,14 +10,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.isms.identity.common.ApiResponse;
 import com.isms.identity.dto.request.LoginRequest;
 import com.isms.identity.dto.request.RegisterRequest;
+import com.isms.identity.dto.response.TokenResponse;
 import com.isms.identity.dto.response.UserResponse;
 import com.isms.identity.service.AuthService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class AuthController {
 
@@ -30,10 +31,11 @@ public class AuthController {
 				.body(ApiResponse.success("Account Created Successfully", createdAccount));
 	}
 
-	@PostMapping("signin")
-	public String userLogin(@Valid @RequestBody LoginRequest credentials) {
-
-		return "";
+	@PostMapping("login")
+	public TokenResponse userLogin(@Valid @RequestBody LoginRequest credentials) {
+		return authService.login(credentials);
 	}
+	
+	
 
 }
