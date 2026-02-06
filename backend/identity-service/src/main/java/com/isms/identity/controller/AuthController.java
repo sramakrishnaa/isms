@@ -17,8 +17,8 @@ import com.isms.identity.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class AuthController {
 
@@ -33,7 +33,7 @@ public class AuthController {
 
 	@PostMapping("signin")
 	public TokenResponse userLogin(@Valid @RequestBody LoginRequest credentials) {
-
+		System.out.println("ddgfdg");
 		return authService.login(credentials);
 	}
 

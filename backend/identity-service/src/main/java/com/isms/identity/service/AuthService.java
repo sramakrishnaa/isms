@@ -62,9 +62,6 @@ public class AuthService {
 			Authentication authentication = authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(credentials.getEmail(), credentials.getPassword()));
 			System.err.println(authentication.getPrincipal());
-			if (authentication.isAuthenticated()) {
-
-			}
 			return new TokenResponse("login success");
 		} catch (Exception e) {
 			throw e;
