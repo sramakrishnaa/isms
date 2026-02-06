@@ -20,7 +20,7 @@ import com.isms.identity.exception.UserNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-	
+
 	@ExceptionHandler(UserNotFoundException.class)
 	public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(ex.getMessage()));
@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
 			DataIntegrityViolationException ex) {
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error("Duplicate or Invalid Data"));
 	}
-	
+
 //	@ExceptionHandler(DataIntegrityViolationException.class)
 //	public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException exception) {
 //		String message = exception.getMostSpecificCause().getLocalizedMessage();
