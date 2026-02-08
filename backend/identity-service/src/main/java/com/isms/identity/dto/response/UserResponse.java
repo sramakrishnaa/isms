@@ -14,16 +14,15 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserResponse{
+public class UserResponse {
 
 	private UUID id;
-    private String email;
-    private String username;
-    private String firstName;
-    private String lastName;
-    private String phoneNumber;
-    private Boolean emailVerified;
-    private Boolean active;
-    private Instant lastLoginAt;
-    private Instant createdAt;
+	private String email;
+	private String firstName;
+	private String lastName;
+	private String phoneNumber;
+	private Boolean emailVerified;
+	private Boolean active;
+	private Instant lastLoginAt;
+	private Instant createdAt;
 }

@@ -1,16 +1,17 @@
 package com.isms.identity.service;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.isms.identity.dto.request.LoginRequest;
 import com.isms.identity.dto.request.RefreshTokenRequest;
@@ -22,14 +23,15 @@ import com.isms.identity.entity.User;
 import com.isms.identity.exception.EmailAlreadyExistsException;
 import com.isms.identity.exception.UnauthorizedException;
 import com.isms.identity.repository.UserRepository;
+import com.isms.identity.security.CustomUserDetails;
+import com.isms.identity.security.CustomUserDetailsService;
 import com.isms.identity.security.JwtTokenProvider;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Service
-@Transactional
+@RequiredArgsConstructor
 public class AuthService {
 
 	private final UserRepository userRepository;
@@ -38,26 +40,34 @@ public class AuthService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final ModelMapper modelMapper;
 	private final RefreshTokenService refreshTokenService;
-	private final UserDetailsService userDetailsService;
+	private final CustomUserDetailsService customUserDetailsService;
+
+	private void onSuccessfulLogin(User user) {
+		user.resetFailedLoginAttempts();
+		user.setLastLoginAt(Instant.now());
+		userRepository.save(user);
+	}
+
+	private void onFailedLogin(User user) {
+		user.incrementFailedLoginAttempts();
+		userRepository.save(user);
+	}
+
+	private String encodePassword(String raw) {
+		return passwordEncoder.encode(raw);
+	}
 
 	public UserResponse register(RegisterRequest request) {
 
 		String email = request.getEmail().trim().toLowerCase();
-		String username = request.getUsername().trim();
 		String phoneNumber = request.getPhoneNumber() != null ? request.getPhoneNumber().trim() : null;
 
-		if (userRepository.existsByEmail(email)) {
+		if (userRepository.existsByEmail(email))
 			throw new EmailAlreadyExistsException("Email already registered: " + email);
-		}
 
-		if (userRepository.existsByUsername(username)) {
-			throw new EmailAlreadyExistsException("Username already taken: " + username);
-		}
-
-		User user = User.builder().email(email).username(username)
-				.passwordHash(passwordEncoder.encode(request.getPassword())).firstName(request.getFirstName().trim())
-				.lastName(request.getLastName()).phoneNumber(phoneNumber.trim()).passwordChangedAt(Instant.now())
-				.build();
+		User user = User.builder().email(email).passwordHash(encodePassword(request.getPassword()))
+				.firstName(request.getFirstName().trim()).lastName(request.getLastName().trim())
+				.phoneNumber(phoneNumber).passwordChangedAt(Instant.now()).build();
 
 		User savedUser = userRepository.save(user);
 		return modelMapper.map(savedUser, UserResponse.class);
@@ -65,34 +75,27 @@ public class AuthService {
 
 	public LoginResponse login(LoginRequest request, HttpServletRequest httpRequest) {
 
-		String email = request.getEmail().trim();
-
-		User user = userRepository.findByEmail(email)
-				.orElseThrow(() -> new UnauthorizedException("Invalid email or password"));
-		if (!user.isEnabled()) {
-			throw new UnauthorizedException("Account is disabled");
-		}
-
-		if (!user.isAccountNonLocked()) {
-			throw new UnauthorizedException("Account is locked due to multiple failed login attempts");
-		}
+		User user = userRepository.findByEmail(request.getEmail())
+				.orElseThrow(() -> new UnauthorizedException("Invaid Email address"));
 
 		try {
 			Authentication authentication = authenticationManager
 					.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
-			handleSuccessfulLogin(user);
-			
-			UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-			String accessToken = jwtTokenProvider.generateToken(userDetails);
-			String refreshToken = refreshTokenService.createRefreshToken(user.getId(), httpRequest);
+			CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
+			onSuccessfulLogin(user);
+
+			String accessToken = jwtTokenProvider.generateAccessToken(principal);
+			String refreshToken = refreshTokenService.issueRefreshToken(user.getId(), httpRequest);
 
 			return LoginResponse.builder().accessToken(accessToken).refreshToken(refreshToken)
 					.expiresIn(jwtTokenProvider.getAccessTokenExpiration())
 					.user(modelMapper.map(user, UserResponse.class)).build();
-		} catch (Exception e) {
-			handleFailedLogin(user);
-			throw new UnauthorizedException("Invalid email or password");
+		} catch (BadCredentialsException e) {
+			onFailedLogin(user);
+			throw new UnauthorizedException(e.getMessage());
+		} catch (AuthenticationException e) {
+			throw new UnauthorizedException(e.getMessage());
 		}
 	}
 
@@ -103,8 +106,8 @@ public class AuthService {
 		User user = userRepository.findById(token.getUserId())
 				.orElseThrow(() -> new UnauthorizedException("User not found"));
 
-		UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
-		String newAccessToken = jwtTokenProvider.generateToken(userDetails);
+		UserDetails userDetails = customUserDetailsService.loadUserByUsername(user.getEmail());
+		String newAccessToken = jwtTokenProvider.generateAccessToken((CustomUserDetails) userDetails);
 		String newRefreshToken = refreshTokenService.rotateRefreshToken(request.getRefreshToken(), httpRequest);
 
 		return LoginResponse.builder().accessToken(newAccessToken).refreshToken(newRefreshToken)
@@ -112,15 +115,12 @@ public class AuthService {
 				.build();
 	}
 
-	private void handleFailedLogin(User user) {
-		user.incrementFailedLoginAttempts();
-		userRepository.save(user);
+	public void logout(String refreshToken) {
+		refreshTokenService.logout(refreshToken);
 	}
 
-	private void handleSuccessfulLogin(User user) {
-		user.resetFailedLoginAttempts();
-		user.setLastLoginAt(Instant.now());
-		userRepository.save(user);
+	public void logoutAll(UUID userId) {
+		refreshTokenService.logoutAll(userId);
 	}
 
 }

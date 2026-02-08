@@ -32,7 +32,11 @@ public class SecurityConfiguration {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authenticationProvider(authenticationProvider())
 				.authorizeHttpRequests(
-						request -> request.requestMatchers("/api/auth/**").permitAll().anyRequest().authenticated())
+						request -> request.requestMatchers(
+								"/api/auth/login",
+								"/api/auth/signup",
+								"/api/auth/refresh"
+							).permitAll().anyRequest().authenticated())
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();

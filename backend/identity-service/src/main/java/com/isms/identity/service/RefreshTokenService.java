@@ -2,7 +2,6 @@ package com.isms.identity.service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.UUID;
@@ -20,69 +19,13 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class RefreshTokenService {
 
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final JwtTokenProvider jwtTokenProvider;
 
-	public String createRefreshToken(UUID userId, HttpServletRequest request) {
-
-		String rawToken = generateToken();
-		String hash = hashToken(rawToken);
-
-		RefreshToken token = RefreshToken.builder().userId(userId).tokenHash(hash)
-				.deviceInfo(extractDeviceInfo(request)).ipAddress(extractIpAddress(request))
-				.userAgent(extractUserAgent(request))
-				.expiresAt(Instant.now().plusMillis(jwtTokenProvider.getRefreshTokenExpiration())).build();
-
-		refreshTokenRepository.save(token);
-		return rawToken;
-	}
-
-	public RefreshToken validateRefreshToken(String rawToken) {
-
-		String hash = hashToken(rawToken);
-
-		RefreshToken token = refreshTokenRepository.findByTokenHash(hash)
-				.orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
-
-		if (!token.isValid()) {
-			throw new UnauthorizedException("Refresh token expired or revoked");
-		}
-
-		return token;
-	}
-
-	public String rotateRefreshToken(String rawToken, HttpServletRequest request) {
-
-		RefreshToken oldToken = validateRefreshToken(rawToken);
-
-		if (oldToken.getReplacedByTokenId() != null) {
-			refreshTokenRepository.revokeAllTokensByUserId(oldToken.getUserId());
-			throw new UnauthorizedException("Refresh token reuse detected");
-		}
-
-		String newRaw = generateToken();
-		String newHash = hashToken(newRaw);
-
-		RefreshToken newToken = RefreshToken.builder().userId(oldToken.getUserId()).tokenHash(newHash)
-				.deviceInfo(extractDeviceInfo(request)).ipAddress(extractIpAddress(request))
-				.userAgent(extractUserAgent(request))
-				.expiresAt(Instant.now().plusMillis(jwtTokenProvider.getRefreshTokenExpiration())).build();
-
-		refreshTokenRepository.save(newToken);
-
-		oldToken.revoke(newToken.getId());
-		refreshTokenRepository.save(oldToken);
-
-		return newRaw;
-	}
-
-
-
 	private String generateToken() {
-		return UUID.randomUUID() + "-" + UUID.randomUUID();
+		return UUID.randomUUID() + "." + UUID.randomUUID();
 	}
 
 	private String hashToken(String token) {
@@ -111,4 +54,60 @@ public class RefreshTokenService {
 		String xff = r.getHeader("X-Forwarded-For");
 		return (xff != null) ? xff.split(",")[0] : r.getRemoteAddr();
 	}
+
+	private RefreshToken buildRefreshToken(UUID userId, String hash, HttpServletRequest request) {
+		return RefreshToken.builder().userId(userId).tokenHash(hash).deviceInfo(extractDeviceInfo(request))
+				.ipAddress(extractIpAddress(request)).userAgent(extractUserAgent(request))
+				.expiresAt(Instant.now().plusMillis(jwtTokenProvider.getRefreshTokenExpiration())).build();
+	}
+
+	@Transactional
+	public String issueRefreshToken(UUID userId, HttpServletRequest request) {
+		String rawToken = generateToken();
+		String hash = hashToken(rawToken);
+		RefreshToken refreshToken = buildRefreshToken(userId, hash, request);
+		refreshTokenRepository.save(refreshToken);
+		return rawToken;
+	}
+
+	public RefreshToken validateRefreshToken(String rawToken) {
+		String hash = hashToken(rawToken);
+		RefreshToken token = refreshTokenRepository.findByTokenHash(hash)
+				.orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
+		if (!token.isValid()) {
+			throw new UnauthorizedException("Refresh token expired or revoked");
+		}
+		return token;
+	}
+
+	@Transactional
+	public String rotateRefreshToken(String rawToken, HttpServletRequest request) {
+		RefreshToken old = validateRefreshToken(rawToken);
+		if (old.getReplacedByTokenId() != null) {
+			refreshTokenRepository.revokeAllTokensByUserId(old.getUserId());
+			throw new UnauthorizedException("Refresh token reuse detected");
+		}
+		String newRaw = generateToken();
+		String newHash = hashToken(newRaw);
+		RefreshToken newToken = buildRefreshToken(old.getUserId(), newHash, request);
+		refreshTokenRepository.save(newToken);
+		old.revoke(newToken.getId());
+		refreshTokenRepository.save(old);
+		return newRaw;
+	}
+
+	@Transactional
+	public void logoutAll(UUID userId) {
+		refreshTokenRepository.revokeAllTokensByUserId(userId);
+	}
+
+	@Transactional
+	public void logout(String rawToken) {
+		String hashed = hashToken(rawToken);
+		refreshTokenRepository.findByTokenHash(hashed).ifPresent(token -> {
+			token.revoke(null);
+			refreshTokenRepository.save(token);
+		});
+	}
+
 }

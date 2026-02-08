@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,9 +48,8 @@ public class RefreshToken {
 	@Column(name = "expires_at", nullable = false)
 	private Instant expiresAt;
 
-	@Builder.Default
 	@Column(name = "revoked", nullable = false)
-	private boolean revoked = false;
+	private boolean revoked;
 
 	@Column(name = "revoked_at")
 	private Instant revokedAt;
@@ -57,9 +57,14 @@ public class RefreshToken {
 	@Column(name = "replaced_by_token_id")
 	private UUID replacedByTokenId;
 
-	@Builder.Default
 	@Column(name = "created_at", updatable = false, nullable = false)
-	private Instant createdAt = Instant.now();
+	private Instant createdAt;
+
+	@PrePersist
+	void onCreate() {
+		this.createdAt = Instant.now();
+		this.revoked = false;
+	}
 
 	public boolean isExpired() {
 		return Instant.now().isAfter(this.expiresAt);

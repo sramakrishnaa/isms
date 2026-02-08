@@ -41,9 +41,6 @@ public class User {
 	@Column(nullable = false, unique = true, length = 255)
 	private String email;
 
-	@Column(nullable = false, unique = true, length = 100)
-	private String username;
-
 	@Column(name = "password_hash", nullable = false, length = 255)
 	private String passwordHash;
 
@@ -89,8 +86,6 @@ public class User {
 	@LastModifiedDate
 	@Column(name = "updated_at", nullable = false)
 	private Instant updatedAt;
-
-	// Business / Domain Logic
 
 	public void incrementFailedLoginAttempts() {
 		this.failedLoginAttempts++;
