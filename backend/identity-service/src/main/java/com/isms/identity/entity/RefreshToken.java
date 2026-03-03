@@ -10,19 +10,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.Version;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "refresh_tokens")
 @Getter
-@Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class RefreshToken {
 
 	@Id
@@ -30,22 +26,26 @@ public class RefreshToken {
 	@Column(name = "id", updatable = false, nullable = false)
 	private UUID id;
 
-	@Column(name = "user_id", nullable = false)
+	@Version
+	@Column(name = "version", nullable = false)
+	private Long version;
+
+	@Column(name = "user_id", nullable = false, updatable = false)
 	private UUID userId;
 
-	@Column(name = "token_hash", nullable = false, unique = true, length = 255)
+	@Column(name = "token_hash", nullable = false, unique = true, updatable = false, length = 255)
 	private String tokenHash;
 
-	@Column(name = "device_info")
+	@Column(name = "device_info", updatable = false)
 	private String deviceInfo;
 
-	@Column(name = "ip_address", length = 45)
+	@Column(name = "ip_address", length = 45, updatable = false)
 	private String ipAddress;
 
-	@Column(name = "user_agent", columnDefinition = "TEXT")
+	@Column(name = "user_agent", columnDefinition = "TEXT", updatable = false)
 	private String userAgent;
 
-	@Column(name = "expires_at", nullable = false)
+	@Column(name = "expires_at", nullable = false, updatable = false)
 	private Instant expiresAt;
 
 	@Column(name = "absolute_expires_at", nullable = false, updatable = false)

@@ -3,7 +3,6 @@ package com.isms.identity.service;
 import java.time.Instant;
 import java.util.UUID;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,13 +18,13 @@ import com.isms.identity.dto.request.RefreshTokenRequest;
 import com.isms.identity.dto.request.RegisterRequest;
 import com.isms.identity.dto.response.LoginResponse;
 import com.isms.identity.dto.response.UserResponse;
-import com.isms.identity.entity.RefreshToken;
 import com.isms.identity.entity.User;
 import com.isms.identity.exception.EmailAlreadyExistsException;
 import com.isms.identity.exception.UnauthorizedException;
 import com.isms.identity.repository.UserRepository;
 import com.isms.identity.security.CustomUserDetails;
 import com.isms.identity.security.JwtTokenProvider;
+import com.isms.identity.service.RefreshTokenService.RotationResult;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -38,42 +37,32 @@ public class AuthService {
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManager authenticationManager;
 	private final JwtTokenProvider jwtTokenProvider;
-	private final ModelMapper modelMapper;
 	private final RefreshTokenService refreshTokenService;
 
 	@Transactional
 	public UserResponse register(RegisterRequest request) {
 		String email = request.getEmail().trim().toLowerCase();
-
 		if (userRepository.existsByEmail(email)) {
 			throw new EmailAlreadyExistsException("Email already registered: " + email);
 		}
-
 		User user = buildUserFromRequest(request, email);
 		User savedUser = userRepository.save(user);
-
 		return UserMapper.toResponse(savedUser);
 	}
 
 	@Transactional
 	public LoginResponse login(LoginRequest request, HttpServletRequest httpRequest) {
-
 		User user = userRepository.findByEmail(request.getEmail())
 				.orElseThrow(() -> new UnauthorizedException("Invalid email address"));
-
 		try {
 			Authentication authentication = authenticationManager
 					.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
 			CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
-
 			recordSuccessfulLogin(user);
-
 			String accessToken = jwtTokenProvider.generateAccessToken(principal);
 			String refreshToken = refreshTokenService.issueRefreshToken(user.getId(), httpRequest);
-
 			return buildLoginResponse(accessToken, refreshToken, user);
-
 		} catch (BadCredentialsException e) {
 			recordFailedLogin(user);
 			throw new UnauthorizedException("Invalid email or password");
@@ -84,15 +73,12 @@ public class AuthService {
 
 	@Transactional
 	public LoginResponse refreshToken(RefreshTokenRequest request, HttpServletRequest httpRequest) {
-		RefreshToken oldToken = refreshTokenService.validateRefreshToken(request.getRefreshToken());
-
-		User user = userRepository.findById(oldToken.getUserId())
+		RotationResult result = refreshTokenService.rotateRefreshToken(request.getRefreshToken(), httpRequest);
+		User user = userRepository.findById(result.userId())
 				.orElseThrow(() -> new UnauthorizedException("User not found"));
-
+		assertAccountIsActive(user);
 		String newAccessToken = jwtTokenProvider.generateAccessToken(new CustomUserDetails(user));
-		String newRefreshToken = refreshTokenService.rotateRefreshToken(oldToken, httpRequest);
-
-		return buildLoginResponse(newAccessToken, newRefreshToken, user);
+		return buildLoginResponse(newAccessToken, result.newRawToken(), user);
 	}
 
 	public void logout(String refreshToken) {
@@ -126,4 +112,15 @@ public class AuthService {
 		user.incrementFailedLoginAttempts();
 		userRepository.save(user);
 	}
+
+	private void assertAccountIsActive(User user) {
+		CustomUserDetails principal = new CustomUserDetails(user);
+		if (!principal.isEnabled()) {
+			throw new UnauthorizedException("Account is disabled");
+		}
+		if (!principal.isAccountNonLocked()) {
+			throw new UnauthorizedException("Account is locked");
+		}
+	}
+
 }

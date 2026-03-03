@@ -8,6 +8,7 @@ import java.util.Base64;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.isms.identity.entity.RefreshToken;
@@ -26,6 +27,10 @@ public class RefreshTokenService {
 
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final JwtTokenProvider jwtTokenProvider;
+	private final TokenRevokeService tokenRevokeService;
+
+	public record RotationResult(String newRawToken, UUID userId) {
+	}
 
 	@Transactional
 	public String issueRefreshToken(UUID userId, HttpServletRequest request) {
@@ -36,20 +41,13 @@ public class RefreshTokenService {
 		return rawToken;
 	}
 
-	@Transactional(readOnly = true)
-	public RefreshToken validateRefreshToken(String rawToken) {
-		return refreshTokenRepository.findByTokenHash(hashToken(rawToken))
-				.orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
-	}
-
 	@Transactional
-	public String rotateRefreshToken(RefreshToken oldToken, HttpServletRequest request) {
+	public RotationResult rotateRefreshToken(String rawToken, HttpServletRequest request) {
+		RefreshToken oldToken = refreshTokenRepository.findByTokenHash(hashToken(rawToken))
+				.orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
 
 		if (oldToken.getReplacedByTokenId() != null) {
-			oldToken.markReuseDetected();
-			refreshTokenRepository.save(oldToken);
-			refreshTokenRepository.revokeAllTokensByUserId(oldToken.getUserId());
-			log.warn("Refresh token reuse detected for userId={}. All sessions revoked.", oldToken.getUserId());
+			tokenRevokeService.revokeAllSessionsOnReuseDetection(oldToken);
 			throw new UnauthorizedException("Refresh token reuse detected. All sessions have been revoked.");
 		}
 
@@ -58,14 +56,14 @@ public class RefreshTokenService {
 		}
 
 		String newRaw = generateToken();
-		RefreshToken newToken = // Rotation — inherited from the chain
-				buildRefreshToken(oldToken.getUserId(), newRaw, oldToken.getAbsoluteExpiresAt(), request);
+		RefreshToken newToken = buildRefreshToken(oldToken.getUserId(), newRaw, oldToken.getAbsoluteExpiresAt(),
+				request);
 		refreshTokenRepository.save(newToken);
 
 		oldToken.revoke(newToken.getId());
 		refreshTokenRepository.save(oldToken);
 
-		return newRaw;
+		return new RotationResult(newRaw, oldToken.getUserId());
 	}
 
 	@Transactional
@@ -78,7 +76,7 @@ public class RefreshTokenService {
 
 	@Transactional
 	public void logoutAll(UUID userId) {
-		refreshTokenRepository.revokeAllTokensByUserId(userId);
+		refreshTokenRepository.revokeAllTokensByUserId(userId, Instant.now());
 	}
 
 	private String generateToken() {
@@ -102,6 +100,13 @@ public class RefreshTokenService {
 				.userAgent(extractUserAgent(request))
 				.expiresAt(Instant.now().plusMillis(jwtTokenProvider.getRefreshTokenExpiration()))
 				.absoluteExpiresAt(absoluteExpiresAt).build();
+	}
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void revokeAllSessionsOnReuseDetection(RefreshToken token) {
+		token.markReuseDetected();
+		refreshTokenRepository.save(token);
+		refreshTokenRepository.revokeAllTokensByUserId(token.getUserId(), Instant.now());
 	}
 
 	private String extractIpAddress(HttpServletRequest request) {
