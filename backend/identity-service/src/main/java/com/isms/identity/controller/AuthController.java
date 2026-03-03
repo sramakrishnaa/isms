@@ -30,7 +30,7 @@ public class AuthController {
 
 	private final AuthService authService;
 
-	@PostMapping("signup")
+	@PostMapping("/signup")
 	public ResponseEntity<ApiResponse<UserResponse>> signup(@Valid @RequestBody RegisterRequest request) {
 		UserResponse createdAccount = authService.register(request);
 		return ResponseEntity.status(HttpStatus.CREATED)
@@ -53,9 +53,7 @@ public class AuthController {
 
 	@PostMapping("/logout")
 	public ResponseEntity<ApiResponse<Void>> logout(@Valid @RequestBody LogoutRequest request) {
-
 		authService.logout(request.getRefreshToken());
-
 		return ResponseEntity.ok(ApiResponse.success(null, "Logged out successfully"));
 	}
 

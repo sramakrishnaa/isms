@@ -12,7 +12,6 @@ import com.isms.identity.entity.User;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +30,8 @@ public class JwtTokenProvider {
 		Date now = new Date();
 		Date expiry = new Date(now.getTime() + jwtConfig.getAccessTokenExpiration());
 		User user = userDetails.getUser();
-		return Jwts.builder().setSubject(user.getEmail()).setIssuedAt(now).setExpiration(expiry)
-				.signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
+		return Jwts.builder().setSubject(user.getEmail()).claim("userId", user.getId().toString()).setIssuedAt(now)
+				.setExpiration(expiry).signWith(getSigningKey()).compact();
 	}
 
 	public boolean validateToken(String token) {
@@ -50,6 +49,10 @@ public class JwtTokenProvider {
 
 	public Long getRefreshTokenExpiration() {
 		return jwtConfig.getRefreshTokenExpiration();
+	}
+
+	public Long getAbsoluteSessionExpiration() {
+		return jwtConfig.getAbsoluteSessionExpiration();
 	}
 
 	public String extractUsername(String token) {

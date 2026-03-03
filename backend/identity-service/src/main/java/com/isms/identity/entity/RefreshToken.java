@@ -48,8 +48,11 @@ public class RefreshToken {
 	@Column(name = "expires_at", nullable = false)
 	private Instant expiresAt;
 
+	@Column(name = "absolute_expires_at", nullable = false, updatable = false)
+	private Instant absoluteExpiresAt;
+
 	@Column(name = "revoked", nullable = false)
-	private boolean revoked;
+	private boolean revoked = false;
 
 	@Column(name = "revoked_at")
 	private Instant revokedAt;
@@ -57,8 +60,24 @@ public class RefreshToken {
 	@Column(name = "replaced_by_token_id")
 	private UUID replacedByTokenId;
 
+	@Column(name = "reuse_detected_at")
+	private Instant reuseDetectedAt;
+
 	@Column(name = "created_at", updatable = false, nullable = false)
 	private Instant createdAt;
+
+	@Builder
+	public RefreshToken(UUID userId, String tokenHash, String deviceInfo, String ipAddress, String userAgent,
+			Instant expiresAt, Instant absoluteExpiresAt) {
+		this.userId = userId;
+		this.tokenHash = tokenHash;
+		this.deviceInfo = deviceInfo;
+		this.ipAddress = ipAddress;
+		this.userAgent = userAgent;
+		this.expiresAt = expiresAt;
+		this.absoluteExpiresAt = absoluteExpiresAt;
+		this.revoked = false;
+	}
 
 	@PrePersist
 	void onCreate() {
@@ -67,16 +86,21 @@ public class RefreshToken {
 	}
 
 	public boolean isExpired() {
-		return Instant.now().isAfter(this.expiresAt);
+		Instant now = Instant.now();
+		return now.isAfter(this.expiresAt) || now.isAfter(this.absoluteExpiresAt);
 	}
 
 	public boolean isValid() {
 		return !revoked && !isExpired();
 	}
 
-	public void revoke(UUID replacedBy) {
+	public void revoke(UUID replacedByTokenId) {
 		this.revoked = true;
 		this.revokedAt = Instant.now();
-		this.replacedByTokenId = replacedBy;
+		this.replacedByTokenId = replacedByTokenId;
+	}
+
+	public void markReuseDetected() {
+		this.reuseDetectedAt = Instant.now();
 	}
 }
