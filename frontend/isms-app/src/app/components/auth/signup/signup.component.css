@@ -1,0 +1,119 @@
+mat-card{
+    width: 500px;
+}
+.signup-card {
+    padding: 16px;
+}
+
+.signup-header {
+    padding: 0px 0px 8px 0;
+    margin: 24px;
+    text-align: center;
+}
+
+.signup-title {
+    font-size: 1.25rem;
+    margin-bottom: 4px;
+    font-weight: 400;
+}
+
+.signup-subtitle {
+    font-size: 0.875rem;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.form-field-container {
+    margin-bottom: 12px;
+}
+
+.form-field-full {
+    width: 100%;
+}
+
+.form-actions {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 0;
+    margin-top: 16px;
+}
+
+.submit-button {
+    width: 50%;
+}
+
+.form-footer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.signin-text {
+    margin: 0;
+}
+
+.signin-link {
+    color: #1976d2;
+    text-decoration: none;
+}
+
+.signin-link:hover {
+    text-decoration: underline;
+}
+
+
+/* Snackbar color customization */
+::ng-deep .snackbar-success {
+  background-color: #4caf50 !important;
+  color: white !important;
+}
+
+::ng-deep .snackbar-success .mat-simple-snack-bar-content {
+  color: white !important;
+}
+
+::ng-deep .snackbar-success .mat-button {
+  color: white !important;
+}
+
+::ng-deep .snackbar-error {
+  background-color: #f44336 !important;
+  color: white !important;
+}
+
+::ng-deep .snackbar-error .mat-simple-snack-bar-content {
+  color: white !important;
+}
+
+::ng-deep .snackbar-error .mat-button {
+  color: white !important;
+}
+
+::ng-deep .snackbar-info {
+  background-color: #2196f3 !important;
+  color: white !important;
+}
+
+::ng-deep .snackbar-info .mat-simple-snack-bar-content {
+  color: white !important;
+}
+
+::ng-deep .snackbar-info .mat-button {
+  color: white !important;
+}
+
+::ng-deep .snackbar-warning {
+  background-color: #ff9800 !important;
+  color: white !important;
+}
+
+::ng-deep .snackbar-warning .mat-simple-snack-bar-content {
+  color: white !important;
+}
+
+::ng-deep .snackbar-warning .mat-button {
+  color: white !important;
+}

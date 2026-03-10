@@ -3,24 +3,28 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { RegisterComponent } from './components/auth/register/register.component';
-import { MaterialModule } from './material/material.module';
-import { MatGridListModule } from '@angular/material/grid-list';
+import { MaterialModule } from './modules/material.module';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { SignupComponent } from './components/auth/signup/signup.component';
+import { SigninComponent } from './components/auth/signin/signin.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    RegisterComponent
+    SignupComponent,
+    SigninComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
     BrowserAnimationsModule,
-    MaterialModule, FormsModule, CommonModule, ReactiveFormsModule, MatGridListModule
+    ReactiveFormsModule,
+    FormsModule,
+    CommonModule,
+    AppRoutingModule,
+    MaterialModule,
 
   ],
   providers: [],
