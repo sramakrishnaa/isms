@@ -10,12 +10,14 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SignupComponent } from './components/auth/signup/signup.component';
 import { SigninComponent } from './components/auth/signin/signin.component';
+import { HomeComponent } from './components/home/home.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SignupComponent,
-    SigninComponent
+    SigninComponent,
+    HomeComponent,
   ],
   imports: [
     BrowserModule,
@@ -25,7 +27,6 @@ import { SigninComponent } from './components/auth/signin/signin.component';
     CommonModule,
     AppRoutingModule,
     MaterialModule,
-
   ],
   providers: [],
   bootstrap: [AppComponent]

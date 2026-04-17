@@ -1,7 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../validators/custom-validators';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { SnackbarService } from '../../../services/snackbar.service';
 import { Router } from '@angular/router';
 
@@ -19,7 +18,7 @@ export class SignupComponent {
 
   constructor(private fb: FormBuilder,
     private snackbarService: SnackbarService,
-    private router:Router
+    private router: Router
   ) {
     this.signupForm = this.fb.group(
       {
@@ -43,7 +42,7 @@ export class SignupComponent {
     event.stopPropagation();
   }
 
-  toggleConfirmPassword(event: MouseEvent): void {
+  toggleConfirmPassword(event: MouseEvent) {
     this.hideConfirmPassword.set(!this.hideConfirmPassword());
     event.stopPropagation();
   }
@@ -68,7 +67,7 @@ export class SignupComponent {
     }, 2000);
   }
 
- 
+
   private markFormGroupTouched(fg: FormGroup): void {
     Object.keys(fg.controls).forEach(k => {
       const control = fg.get(k);
@@ -76,6 +75,6 @@ export class SignupComponent {
       if (control instanceof FormGroup) {
         this.markFormGroupTouched(control);
       }
-    })
+    });
   }
 }

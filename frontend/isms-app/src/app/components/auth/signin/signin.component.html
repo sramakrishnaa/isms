@@ -1,1 +1,75 @@
-<p>signin works!</p>
+<div class="page-center">
+    <mat-card class="p-16 border-danger">
+        <div class="py-8 m-24 text-center">
+            <div id="signin-title" class="text-xl text-regular mb-4">Welcome Back</div>
+            <div class="text-sm text-muted">Sign in to your ISMS account</div>
+        </div>
+
+        <mat-card-content>
+            <form [formGroup]="signinForm" (ngSubmit)="onSubmit()" novalidate aria-labelledby="signin-title">
+
+                <!-- Email Address -->
+                <div class="mb-12">
+                    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+                        <mat-label>Email Address</mat-label>
+                        <input matInput formControlName="email" autocomplete="email" type="email"
+                            placeholder="e.g., john.doe@example.com" maxlength="255" aria-required="true">
+                        <mat-icon matPrefix>email</mat-icon>
+                        <mat-error *ngIf="f['email'].hasError('required')">
+                            Email address is required
+                        </mat-error>
+                        <mat-error *ngIf="f['email'].hasError('email')">
+                            Please enter a valid email address
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-12">
+                    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+                        <mat-label>Password</mat-label>
+                        <input matInput formControlName="password" autocomplete="current-password"
+                            placeholder="Enter your password"
+                            [type]="hidePassword() ? 'password' : 'text'" 
+                            aria-required="true">
+                        <mat-icon matPrefix>lock</mat-icon>
+                        <button type="button" mat-icon-button matSuffix (click)="togglePassword($event)"
+                            [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'" tabindex="-1">
+                            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+                        </button>
+                        <mat-error *ngIf="f['password'].hasError('required')">
+                            Password is required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="flex flex-row justify-between items-center mb-16">
+                    <mat-checkbox formControlName="rememberMe" color="primary">
+                        Remember me
+                    </mat-checkbox>
+                    <a routerLink="/forgot-password" class="forgot-link text-sm">Forgot Password?</a>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="w-full flex flex-row justify-center items-center py-8">
+                    <button type="submit" class="submit-button" mat-flat-button color="primary"
+                        [disabled]="signinForm.invalid || isLoading">
+                        <ng-container *ngIf="!isLoading">Sign In</ng-container>
+                        <span *ngIf="isLoading" class="flex items-center gap-16">
+                            <mat-spinner diameter="20" strokeWidth="3"></mat-spinner>
+                            <span>Signing In...</span>
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </mat-card-content>
+
+        <mat-card-actions class="w-full flex flex-row justify-center items-center">
+            <p class="text-sm text-muted m-0">
+                Don't have an account?
+                <a routerLink="/signup" class="signup-link">Create Account</a>
+            </p>
+        </mat-card-actions>
+    </mat-card>
+</div>

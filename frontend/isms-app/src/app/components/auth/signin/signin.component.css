@@ -1,0 +1,35 @@
+mat-card {
+    width: 100%;
+    max-width: 500px;
+}
+
+.signup-link {
+    color: #1976d2;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.signup-link:hover {
+    text-decoration: underline;
+}
+
+.forgot-link {
+    color: #1976d2;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
+/* Submit button */
+.submit-button {
+    min-width: 200px;
+}
+
+/* Enhance Material icons in form fields */
+mat-icon[matPrefix] {
+    margin-right: 8px;
+    color: rgba(0, 0, 0, 0.54);
+}
