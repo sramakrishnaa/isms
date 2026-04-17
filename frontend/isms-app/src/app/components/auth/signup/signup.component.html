@@ -1,0 +1,136 @@
+<div class="page-center">
+
+    <mat-card>
+        <div class="">
+            <div id="signup-title" class="text-xl text-regular mb-4">Create Account</div>
+            <div class="text-sm text-muted">Register with ISMS to get started</div>
+        </div>
+
+        <mat-card-content>
+            <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" novalidate aria-labelledby="signup-title">
+
+                <!-- First Name -->
+                <div class="mb-12">
+                    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+                        <mat-label>First Name</mat-label>
+                        <input matInput formControlName="firstName" autocomplete="given-name" type="text"
+                            placeholder="Enter your first name" maxlength="100" aria-required="true">
+                        <mat-error *ngIf="f['firstName'].hasError('required')">
+                            First name is required
+                        </mat-error>
+                        <mat-error *ngIf="f['firstName'].hasError('minlength')">
+                            First name must be at least 2 characters
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <!-- Last Name -->
+                <div class="mb-12">
+                    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+                        <mat-label>Last Name</mat-label>
+                        <input matInput formControlName="lastName" autocomplete="family-name" type="text"
+                            placeholder="Enter your last name" maxlength="100" aria-required="true">
+                        <mat-error *ngIf="f['lastName'].hasError('required')">
+                            Last name is required
+                        </mat-error>
+                        <mat-error *ngIf="f['lastName'].hasError('minlength')">
+                            Last name must be at least 2 characters
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <!-- Email Address -->
+                <div class="mb-12">
+                    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+                        <mat-label>Email Address</mat-label>
+                        <input matInput formControlName="email" autocomplete="email" type="email"
+                            placeholder="e.g., john.doe@example.com" maxlength="255" aria-required="true">
+                        <mat-error *ngIf="f['email'].hasError('required')">
+                            Email address is required
+                        </mat-error>
+                        <mat-error *ngIf="f['email'].hasError('email')">
+                            Please enter a valid email address
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <!-- Phone Number -->
+                <div class="mb-12">
+                    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+                        <mat-label>Phone Number</mat-label>
+                        <input matInput formControlName="phoneNumber" autocomplete="tel" type="tel"
+                            placeholder="Enter your phone number" maxlength="13" aria-required="true">
+                        <mat-error *ngIf="f['phoneNumber'].hasError('required')">
+                            Phone number is required
+                        </mat-error>
+                        <mat-error *ngIf="f['phoneNumber'].hasError('invalidIndianPhone')">
+                            Please enter a valid phone number (e.g., 9876543210 or +919876543210)
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-12">
+                    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+                        <mat-label>Password</mat-label>
+                        <input matInput formControlName="password" autocomplete="new-password"
+                            placeholder="Enter your password" [type]="hidePassword() ? 'password' : 'text'"
+                            aria-required="true">
+                        <button type="button" mat-icon-button matSuffix (click)="togglePassword($event)"
+                            [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'" tabindex="-1">
+                            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+                        </button>
+                        <mat-error *ngIf="f['password'].hasError('required')">
+                            Password is required
+                        </mat-error>
+                        <mat-error *ngIf="f['password'].hasError('minlength')">
+                            Password must be at least 8 characters long
+                        </mat-error>
+                        <mat-error *ngIf="f['password'].hasError('pattern')">
+                            Password must contain at least one uppercase letter, one lowercase letter, one number,
+                            and
+                            one special character
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="mb-12">
+                    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+                        <mat-label>Confirm Password</mat-label>
+                        <input matInput formControlName="confirmPassword" autocomplete="new-password"
+                            placeholder="Re-enter your password" [type]="hideConfirmPassword() ? 'password' : 'text'"
+                            aria-required="true">
+                        <button type="button" mat-icon-button matSuffix (click)="toggleConfirmPassword($event)"
+                            [attr.aria-label]="hideConfirmPassword() ? 'Show password' : 'Hide password'" tabindex="-1">
+                            <mat-icon>{{ hideConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+                        </button>
+                        <mat-error *ngIf="f['confirmPassword'].hasError('required')">
+                            Please confirm your password
+                        </mat-error>
+                        <mat-error *ngIf="f['confirmPassword'].hasError('passwordMismatch')">
+                            Passwords do not match
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex flex-row justify-center items-center py-8 mt-24">
+                    <button type="submit" mat-flat-button color="primary" [disabled]="signupForm.invalid || isLoading">
+                        <ng-container *ngIf="!isLoading">Create Account</ng-container>
+                        <span *ngIf="isLoading" class="flex items-center gap-16">
+                            <mat-spinner diameter="25" strokeWidth="3"></mat-spinner>
+                            <span>Creating Account...</span>
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </mat-card-content>
+        <mat-card-actions class="w-full flex flex-row justify-center items-center">
+            <p class="text-sm text-muted signin-text">
+                Already have an account?
+                <a routerLink="/login" class="signin-link">Sign In</a>
+            </p>
+        </mat-card-actions>
+    </mat-card>
+</div>

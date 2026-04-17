@@ -1,4 +1,4 @@
-package com.isms.identity.configuration;
+package com.isms.identity.config;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration.AccessLevel;

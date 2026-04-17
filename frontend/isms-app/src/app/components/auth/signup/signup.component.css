@@ -1,0 +1,17 @@
+mat-card {
+    width: 100%;
+    max-width: 500px;
+}
+
+.signin-text {
+    margin: 0;
+}
+
+.signin-link {
+    color: #1976d2;
+    text-decoration: none;
+}
+
+.signin-link:hover {
+    text-decoration: underline;
+}
