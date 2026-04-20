@@ -10,7 +10,8 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatStepperModule } from '@angular/material/stepper';
 
 @NgModule({
   exports: [
@@ -24,6 +25,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatGridListModule,
     MatDividerModule,
     MatSnackBarModule,
-    MatProgressSpinnerModule]
+    MatProgressSpinnerModule,
+    MatTabsModule,
+    MatStepperModule
+  ]
 })
 export class MaterialModule { }

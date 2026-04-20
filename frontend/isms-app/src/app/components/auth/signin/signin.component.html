@@ -1,20 +1,23 @@
-<div class="page-center">
-    <mat-card class="p-16 border-danger">
-        <div class="py-8 m-24 text-center">
-            <div id="signin-title" class="text-xl text-regular mb-4">Welcome Back</div>
-            <div class="text-sm text-muted">Sign in to your ISMS account</div>
+
+<button (click)="showSb()">nwe</button>
+
+
+<div class="min-h-screen flex items-center justify-center py-6 bg-slate-200">
+    <mat-card class="max-w-lg w-full p-8 pb-0 !border !border-gray-400 !shadow-xl !rounded-2xl">
+        <div class="text-start">
+            <app-logo height="40px"></app-logo>
+            <div id="signin-title" class="text-2xl font-medium mt-4">Welcome Back</div>
+            <div class="text-sm text-muted mb-6">Sign in to your ISMS account</div>
         </div>
 
-        <mat-card-content>
+        <mat-card-content class="!p-0">
             <form [formGroup]="signinForm" (ngSubmit)="onSubmit()" novalidate aria-labelledby="signin-title">
 
                 <!-- Email Address -->
-                <div class="mb-12">
+                <div class="mb-2">
                     <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
-                        <mat-label>Email Address</mat-label>
                         <input matInput formControlName="email" autocomplete="email" type="email"
                             placeholder="e.g., john.doe@example.com" maxlength="255" aria-required="true">
-                        <mat-icon matPrefix>email</mat-icon>
                         <mat-error *ngIf="f['email'].hasError('required')">
                             Email address is required
                         </mat-error>
@@ -25,14 +28,11 @@
                 </div>
 
                 <!-- Password -->
-                <div class="mb-12">
+                <div class="mb-4">
                     <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
-                        <mat-label>Password</mat-label>
                         <input matInput formControlName="password" autocomplete="current-password"
-                            placeholder="Enter your password"
-                            [type]="hidePassword() ? 'password' : 'text'" 
+                            placeholder="Enter your password" [type]="hidePassword() ? 'password' : 'text'"
                             aria-required="true">
-                        <mat-icon matPrefix>lock</mat-icon>
                         <button type="button" mat-icon-button matSuffix (click)="togglePassword($event)"
                             [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'" tabindex="-1">
                             <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
@@ -44,20 +44,20 @@
                 </div>
 
                 <!-- Remember Me & Forgot Password -->
-                <div class="flex flex-row justify-between items-center mb-16">
-                    <mat-checkbox formControlName="rememberMe" color="primary">
+                <div class="flex flex-row justify-end items-center">
+                    <!-- <mat-checkbox formControlName="rememberMe" color="primary">
                         Remember me
-                    </mat-checkbox>
-                    <a routerLink="/forgot-password" class="forgot-link text-sm">Forgot Password?</a>
+                    </mat-checkbox> -->
+                    <a routerLink="/forgot-password" class="text-sky-600 hover:underline">Forgot Password?</a>
                 </div>
 
                 <!-- Submit Button -->
-                <div class="w-full flex flex-row justify-center items-center py-8">
-                    <button type="submit" class="submit-button" mat-flat-button color="primary"
+                <div class="w-full flex flex-row justify-center items-center py-4">
+                    <button type="submit" class="!shadow-none" mat-fab extended color="primary"
                         [disabled]="signinForm.invalid || isLoading">
                         <ng-container *ngIf="!isLoading">Sign In</ng-container>
-                        <span *ngIf="isLoading" class="flex items-center gap-16">
-                            <mat-spinner diameter="20" strokeWidth="3"></mat-spinner>
+                        <span *ngIf="isLoading" class="flex items-center gap-2">
+                            <mat-spinner diameter="20" strokeWidth="2"></mat-spinner>
                             <span>Signing In...</span>
                         </span>
                     </button>
@@ -68,7 +68,7 @@
         <mat-card-actions class="w-full flex flex-row justify-center items-center">
             <p class="text-sm text-muted m-0">
                 Don't have an account?
-                <a routerLink="/signup" class="signup-link">Create Account</a>
+                <a routerLink="/signup" class="text-sky-600 hover:underline">Create Account</a>
             </p>
         </mat-card-actions>
     </mat-card>
