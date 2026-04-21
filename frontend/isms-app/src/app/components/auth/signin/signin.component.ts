@@ -21,7 +21,6 @@ export class SigninComponent {
     this.signinForm = this.fb.group({
       email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
       password: ['', [Validators.required]],
-      rememberMe: [false]
     });
   }
 
@@ -35,20 +34,24 @@ export class SigninComponent {
   }
 
   onSubmit(): void {
-    if (this.signinForm.invalid) {
-      this.markFormGroupTouched(this.signinForm);
-      return;
-    }
+    if (this.signinForm.valid) {
+      this.isLoading = true;
+      this.signinForm.disable();
+      this.hidePassword.set(true);
+      setTimeout(() => {
+        console.log(this.signinForm.value);
+        const credentials = this.signinForm.value;
+        this.signinForm.enable();
+        this.signinForm.reset();
+        this.isLoading = false;
+        console.log(this.signinForm.value);
+        this.snackbarService.success('Sign in successful! Redirecting...');
+        // setTimeout(() => this.router.navigate(['/dashboard']), 1000);
+      }, 3000);
+    }else{
 
-    this.isLoading = true;
-    this.signinForm.disable();
-    this.hidePassword.set(true);
-    setTimeout(() => {
-      const credentials = this.signinForm.value;
-      this.isLoading = false;
-      this.snackbarService.success('Sign in successful! Redirecting...');
-      setTimeout(() => this.router.navigate(['/dashboard']), 1000);
-    }, 3000);
+      this.markFormGroupTouched(this.signinForm);
+    }
   }
 
   private markFormGroupTouched(formGroup: FormGroup): void {
@@ -59,10 +62,5 @@ export class SigninComponent {
         this.markFormGroupTouched(control);
       }
     });
-  }
-
-  showSb(){
-
-    this.snackbarService.info('Sign in successful! Redirecting...');
-  }
+  } 
 }

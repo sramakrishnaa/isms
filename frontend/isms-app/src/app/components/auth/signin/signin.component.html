@@ -1,11 +1,7 @@
-
-<button (click)="showSb()">nwe</button>
-
-
-<div class="min-h-screen flex items-center justify-center py-6 bg-slate-200">
-    <mat-card class="max-w-lg w-full p-8 pb-0 !border !border-gray-400 !shadow-xl !rounded-2xl">
+<div class="min-h-screen flex items-center justify-center bg-slate-200">
+    <mat-card class="w-full max-w-lg p-8 pb-0 !border !border-gray-400 !shadow-xl !rounded-2xl">
         <div class="text-start">
-            <app-logo height="40px"></app-logo>
+            <app-logo></app-logo>
             <div id="signin-title" class="text-2xl font-medium mt-4">Welcome Back</div>
             <div class="text-sm text-muted mb-6">Sign in to your ISMS account</div>
         </div>
@@ -53,11 +49,11 @@
 
                 <!-- Submit Button -->
                 <div class="w-full flex flex-row justify-center items-center py-4">
-                    <button type="submit" class="!shadow-none" mat-fab extended color="primary"
-                        [disabled]="signinForm.invalid || isLoading">
+                    <button type="submit" class="!shadow-none" mat-flat-button color="primary"
+                        [disabled]="isLoading">
                         <ng-container *ngIf="!isLoading">Sign In</ng-container>
-                        <span *ngIf="isLoading" class="flex items-center gap-2">
-                            <mat-spinner diameter="20" strokeWidth="2"></mat-spinner>
+                        <span *ngIf="isLoading" class="flex items-center gap-3">
+                            <mat-spinner diameter="25" strokeWidth="3"></mat-spinner>
                             <span>Signing In...</span>
                         </span>
                     </button>
@@ -68,7 +64,7 @@
         <mat-card-actions class="w-full flex flex-row justify-center items-center">
             <p class="text-sm text-muted m-0">
                 Don't have an account?
-                <a routerLink="/signup" class="text-sky-600 hover:underline">Create Account</a>
+                <a routerLink="/signup">Create Account</a>
             </p>
         </mat-card-actions>
     </mat-card>

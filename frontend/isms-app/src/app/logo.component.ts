@@ -4,13 +4,13 @@ import { Component, Input, input } from '@angular/core';
     selector: 'app-logo',
 
     template: `
-  <div class="flex flex-row items-end gap-1" [ngClass]="'justify-' + justify">
+  <div class="flex flex-row items-center gap-1" [ngClass]="'justify-' + justify">
                 <img [style]="'height:' + height + ';width:' + width"  src="./../../../../assets/dolly-solid.png" alt="ISMS">
                 <div>
-                    <div class="text-primary font-medium" [ngClass]="'text-' + textSize1">
+                    <div class="text-primary leading-none font-medium" [ngClass]="'text-' + textSize1">
                         Inventory
                     </div>
-                    <div class="text-gray-600" [ngClass]="'!text-' + textSize2">
+                    <div class="text-gray-600 leading-none" [ngClass]="'text-' + textSize2">
                         Management
                     </div>
                 </div>
@@ -26,6 +26,6 @@ export class LogoComponent {
     @Input() justify = 'start';
     @Input() height = '45px';
     @Input() width = 'auto';
-    @Input() textSize1 = 'xl';
-    @Input() textSize2 = 'xs';
+    @Input() textSize1 = '2xl';
+    @Input() textSize2 = 'sm';
 }

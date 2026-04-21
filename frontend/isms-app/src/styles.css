@@ -1,14 +1,7 @@
-@import '@angular/material/prebuilt-themes/indigo-pink.css';
-
-@import "tailwindcss";
-
+@tailwind components;
+@tailwind utilities;
 
 
-.text-primary {
+/* .text-primary {
     color: #3f51b5;
-}
-
-
-
-/* bg-linear-to-r/srgb from-indigo-500 to-teal-400 */
-/* bg-linear-to-t from-sky-500 to-indigo-500 */
+} */
