@@ -1,0 +1,71 @@
+<div class="min-h-screen flex items-center justify-center bg-slate-200">
+    <mat-card class="w-full max-w-lg p-8 pb-0 !border !border-gray-400 !shadow-xl !rounded-2xl">
+        <div class="text-start">
+            <app-logo></app-logo>
+            <div id="signin-title" class="text-2xl font-medium mt-4">Welcome Back</div>
+            <div class="text-sm text-muted mb-6">Sign in to your ISMS account</div>
+        </div>
+
+        <mat-card-content class="!p-0">
+            <form [formGroup]="signinForm" (ngSubmit)="onSubmit()" novalidate aria-labelledby="signin-title">
+
+                <!-- Email Address -->
+                <div class="mb-2">
+                    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+                        <input matInput formControlName="email" autocomplete="email" type="email"
+                            placeholder="e.g., john.doe@example.com" maxlength="255" aria-required="true">
+                        <mat-error *ngIf="f['email'].hasError('required')">
+                            Email address is required
+                        </mat-error>
+                        <mat-error *ngIf="f['email'].hasError('email')">
+                            Please enter a valid email address
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-4">
+                    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+                        <input matInput formControlName="password" autocomplete="current-password"
+                            placeholder="Enter your password" [type]="hidePassword() ? 'password' : 'text'"
+                            aria-required="true">
+                        <button type="button" mat-icon-button matSuffix (click)="togglePassword($event)"
+                            [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'" tabindex="-1">
+                            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+                        </button>
+                        <mat-error *ngIf="f['password'].hasError('required')">
+                            Password is required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="flex flex-row justify-end items-center">
+                    <!-- <mat-checkbox formControlName="rememberMe" color="primary">
+                        Remember me
+                    </mat-checkbox> -->
+                    <a routerLink="/forgot-password" class="text-sky-600 hover:underline">Forgot Password?</a>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="w-full flex flex-row justify-center items-center py-4">
+                    <button type="submit" class="!shadow-none" mat-flat-button color="primary"
+                        [disabled]="isLoading">
+                        <ng-container *ngIf="!isLoading">Sign In</ng-container>
+                        <span *ngIf="isLoading" class="flex items-center gap-3">
+                            <mat-spinner diameter="25" strokeWidth="3"></mat-spinner>
+                            <span>Signing In...</span>
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </mat-card-content>
+
+        <mat-card-actions class="w-full flex flex-row justify-center items-center">
+            <p class="text-sm text-muted m-0">
+                Don't have an account?
+                <a routerLink="/signup">Create Account</a>
+            </p>
+        </mat-card-actions>
+    </mat-card>
+</div>
