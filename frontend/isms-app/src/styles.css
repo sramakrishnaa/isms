@@ -5,3 +5,8 @@
 /* .text-primary {
     color: #3f51b5;
 } */
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+}
