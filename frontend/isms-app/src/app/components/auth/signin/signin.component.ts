@@ -1,28 +1,48 @@
-import { Component, signal } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { SnackbarService } from '../../../services/snackbar.service';
+import { Component, OnInit, signal } from '@angular/core';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
+import { SnackbarService } from '../../../services/snackbar/snackbar.service';
 import { Router } from '@angular/router';
+import { Login } from '../../../models/login';
+import { AuthService } from '../../../services/auth.service';
+import { finalize, take } from 'rxjs';
+import { LoginResponse } from '../../../models/login-response';
+import { HttpErrorResponse } from '@angular/common/http';
+import { StatusMessage } from '../../../models/status-message';
 
 @Component({
-    selector: 'app-signin',
-    templateUrl: './signin.component.html',
-    styleUrl: './signin.component.css',
-    standalone: false
+  selector: 'app-signin',
+  templateUrl: './signin.component.html',
+  styleUrl: './signin.component.css',
+  standalone: false,
 })
-export class SigninComponent {
-  signinForm: FormGroup;
-  hidePassword = signal(true);
-  isLoading = false;
+export class SigninComponent implements OnInit {
+  signinForm!: FormGroup<{
+    email: FormControl<string>;
+    password: FormControl<string>;
+  }>;
+
+  hidePassword = signal<boolean>(true);
+  isLoading = signal<boolean>(false);
+
+  signinStatus = signal<StatusMessage | null>(null);
+  isLoginFailed = signal<boolean>(false);
 
   constructor(
     private fb: FormBuilder,
     private snackbarService: SnackbarService,
-    private router: Router
-  ) {
-    this.signinForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
-      password: ['', [Validators.required]],
-    });
+    private authService: AuthService,
+    private router: Router,
+  ) {}
+
+  ngOnInit(): void {
+    this.initForm();
+    this.resetFormState();
   }
 
   get f(): { [key: string]: AbstractControl } {
@@ -30,38 +50,89 @@ export class SigninComponent {
   }
 
   togglePassword(event: MouseEvent): void {
-    this.hidePassword.set(!this.hidePassword());
-    event.stopPropagation();
+    event?.preventDefault();
+    event?.stopPropagation();
+    this.hidePassword.update((value) => !value);
+  }
+
+  private initForm(): void {
+    this.signinForm = this.fb.nonNullable.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required]],
+    });
   }
 
   onSubmit(): void {
-    if (this.signinForm.valid) {
-      this.isLoading = true;
-      this.signinForm.disable();
-      this.hidePassword.set(true);
-      setTimeout(() => {
-        console.log(this.signinForm.value);
-        const credentials = this.signinForm.value;
-        this.signinForm.enable();
-        this.signinForm.reset();
-        this.isLoading = false;
-        console.log(this.signinForm.value);
-        this.snackbarService.success('Sign in successful! Redirecting...');
-        // setTimeout(() => this.router.navigate(['/dashboard']), 1000);
-      }, 3000);
-    }else{
-
-      this.markFormGroupTouched(this.signinForm);
+    if (this.signinForm.invalid || this.isLoading()) {
+      this.signinForm.markAllAsTouched();
+      return;
     }
+    this.hidePassword.set(true);
+    this.signinForm.disable();
+    this.isLoading.set(true);
+    this.performSignin();
   }
 
-  private markFormGroupTouched(formGroup: FormGroup): void {
-    Object.keys(formGroup.controls).forEach(key => {
-      const control = formGroup.get(key);
-      control?.markAsTouched();
-      if (control instanceof FormGroup) {
-        this.markFormGroupTouched(control);
-      }
-    });
-  } 
+  private performSignin(): void {
+    const formValue = this.signinForm.getRawValue();
+
+    const credentials: Login = {
+      email: formValue.email,
+      password: formValue.password,
+    };
+
+    this.authService
+      .signIn(credentials)
+      .pipe(
+        finalize(() => {
+          this.isLoading.set(false);
+          this.signinForm.enable();
+        }),
+        take(1),
+      )
+      .subscribe({
+        next: (response) => {
+          this.handleLoginSuccess(response);
+        },
+        error: (error) => {
+          this.handleLoginError(error);
+        },
+      });
+  }
+
+  private handleLoginSuccess(response: LoginResponse): void {
+    localStorage.setItem('access_token', response.data.accessToken);
+    localStorage.setItem('refresh_token', response.data.refreshToken);
+    localStorage.setItem('user', JSON.stringify(response.data.user));
+    this.snackbarService.success(`Welcome ${response.data.user.firstName}`);
+    this.resetFormState();
+    this.router.navigate(['/dashboard']);
+  }
+
+  private handleLoginError(error: HttpErrorResponse): void {
+    let message = 'Login failed. Try again';
+    if (error.status === 401) {
+      message = 'Invalid email or password';
+    } else if (error.status === 0) {
+      message = 'Unable to connect to server';
+    }
+    this.signinStatus.set({ message, type: 'error' });
+    this.isLoginFailed.set(true);
+  }
+
+ resetFormState(): void {
+    this.clearError();
+    this.signinForm.reset({ email: '', password: '' }, { emitEvent: false });
+    this.signinForm.markAsPristine();
+    this.signinForm.markAsUntouched();
+  }
+
+  clearError(): void {
+    this.signinStatus.set(null);
+    this.isLoginFailed.set(false);
+  }
+
+  routeToSignup(): any {
+    this.router.navigate(['/signup'])
+  }
 }
