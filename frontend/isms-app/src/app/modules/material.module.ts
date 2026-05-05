@@ -12,6 +12,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatStepperModule } from '@angular/material/stepper';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+
 
 @NgModule({
   exports: [
@@ -27,7 +29,8 @@ import { MatStepperModule } from '@angular/material/stepper';
     MatSnackBarModule,
     MatProgressSpinnerModule,
     MatTabsModule,
-    MatStepperModule
+    MatStepperModule,
+    MatCheckboxModule
   ]
 })
 export class MaterialModule { }
