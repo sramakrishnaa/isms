@@ -1,0 +1,21 @@
+<mat-nav-list class="!p-2">
+  @for (item of navigationItems; track item.route) {
+    <a
+      mat-list-item
+      [routerLink]="item.route"
+      routerLinkActive="active-link"
+      #rla="routerLinkActive"
+      [activated]="rla.isActive"
+      [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
+      (click)="navigate.emit()"
+    >
+      <mat-icon matListItemIcon>
+        {{ item.icon }}
+      </mat-icon>
+
+      <span matListItemTitle>
+        {{ item.label }}
+      </span>
+    </a>
+  }
+</mat-nav-list>

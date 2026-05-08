@@ -11,6 +11,7 @@ import { Component, Input } from '@angular/core';
     <span id="hs-soft-color-danger-label">{{ message }}</span>
   </div>`,
   styles: ``,
+  standalone: false
 })
 export class ErrorMessageComponent {
 

@@ -1,11 +1,44 @@
-import { Component } from '@angular/core';
+import { Component, computed, OnInit } from '@angular/core';
+import { KeycloakService } from '../../services/keycloak/keycloak.service';
+import { SnackbarService } from '../../services/snackbar/snackbar.service';
+import { Router } from '@angular/router';
 
 @Component({
-    selector: 'app-home',
-    templateUrl: './home.component.html',
-    styleUrl: './home.component.css',
-    standalone: false
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrl: './home.component.css',
+  standalone: false,
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
+  constructor(
+    private keycloakService: KeycloakService,
+    private snackbarService: SnackbarService,
+    private router: Router
+  ) {}
 
+  isLoggedIn = computed(() => this.keycloakService.keycloak.authenticated);
+  ngOnInit(): void {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get('logout')) {
+      this.snackbarService.showWithAction('You have been logged out', 'dengey');
+      window.history.replaceState({}, document.title, '/');
+    }
+
+    if(this.isLoggedIn()) {
+      this.router.navigate(['/dashboard']);
+    }
+  }
+
+  login() {
+    if(this.isLoggedIn()) {
+      this.router.navigate(['/dashboard']);
+    }
+    this.keycloakService.login();
+  }
+
+
+  register() {
+    this.keycloakService.register();
+  }
 }

@@ -4,17 +4,18 @@ import { Component, Input, input } from '@angular/core';
   selector: 'app-logo',
   template: `
     <div class="flex flex-row items-center gap-1 justify-start">
-      <img class="logo" src="./../../../../assets/dolly-solid.png" alt="ISMS" />
+      <mat-icon class="logo">inventory</mat-icon>
       <div>
         <div class="leading-none font-medium text-2xl">Inventory</div>
-        <div class="text-gray-600 leading-none text-sm">Management</div>
+        <div class="font-light leading-none text-xs">Management</div>
       </div>
     </div>
   `,
   styles: `
     .logo {
-      height: 45px;
-      width: auto;
+      font-size: 28px;
+      width:28px;
+      height: 28px;
     }
   `,
   standalone: false,
