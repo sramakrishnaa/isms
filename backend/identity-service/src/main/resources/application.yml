@@ -23,5 +23,5 @@ server:
 keycloak:
   server-url: http://localhost:8080
   realm: isms
-  client-id: isms-admin-client
-  client-secret: mMoc7gFZFe5t6gQzzNS9mQlD70skSWSo
+  client-id: isms-admin
+  client-secret: Iotxxc9utlodzVlBSAMYUDw50sxJJ2R3

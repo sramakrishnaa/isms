@@ -1,24 +1,23 @@
 package com.isms.identity.controller;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.isms.identity.dto.request.RegisterRequest;
 import com.isms.identity.dto.request.UserUpdateRequest;
 import com.isms.identity.dto.response.ApiResponse;
+import com.isms.identity.dto.response.PaginationResponse;
 import com.isms.identity.dto.response.UserListResponse;
 import com.isms.identity.dto.response.UserResponse;
 import com.isms.identity.service.KeycloakUserService;
@@ -38,11 +37,14 @@ public class UserController {
 	private final KeycloakUserService keycloakUserService;
 
 	@GetMapping
-	public ResponseEntity<ApiResponse<List<UserListResponse>>> getAllUsers(@AuthenticationPrincipal Jwt jwt) {
+	public ResponseEntity<ApiResponse<PaginationResponse<UserListResponse>>> getAllUsers(
+			@AuthenticationPrincipal Jwt jwt, @RequestParam(defaultValue = "0") int pageIndex,
+			@RequestParam(defaultValue = "5") int pageSize, @RequestParam(required = false) String search) {
 
-		List<UserListResponse> users = keycloakUserService.getUsers();
+		PaginationResponse<UserListResponse> users = keycloakUserService.getUsers(pageIndex, pageSize, search);
 
-		ApiResponse<List<UserListResponse>> response = ApiResponse.success(users, "Users fetched successfully");
+		ApiResponse<PaginationResponse<UserListResponse>> response = ApiResponse.success(users,
+				"Users fetched successfully");
 
 		return ResponseEntity.ok(response);
 	}
@@ -57,7 +59,7 @@ public class UserController {
 		return ResponseEntity.ok(response);
 	}
 
-	@PatchMapping("/me")
+	@PutMapping("/me")
 	public ResponseEntity<ApiResponse<UserResponse>> updateCurrentUser(@AuthenticationPrincipal Jwt jwt,
 			@Valid @RequestBody UserUpdateRequest updateRequest) {
 
@@ -69,7 +71,6 @@ public class UserController {
 	}
 
 	@PostMapping
-	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<ApiResponse<String>> createUser(@AuthenticationPrincipal Jwt jwt,
 			@Valid @RequestBody RegisterRequest registerRequest) {
 

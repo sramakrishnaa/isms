@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: auth_db
+      POSTGRES_DB: keyclock_db
     ports:
       - "5432:5432"
     volumes:
@@ -49,7 +49,7 @@ services:
 
       KC_DB: postgres
       KC_DB_URL_HOST: postgres
-      KC_DB_URL_DATABASE: auth_db
+      KC_DB_URL_DATABASE: keyclock_db
       KC_DB_USERNAME: postgres
       KC_DB_PASSWORD: postgres
 

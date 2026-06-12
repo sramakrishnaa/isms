@@ -1,11 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HomeComponent } from './components/home/home.component';
-import { DashboardComponent } from './components/pages/dashboard/dashboard.component';
+import { DashboardComponent } from './feature/components/dashboard/dashboard.component';
 import { MessageComponent } from './components/common/message/message.component';
-import { authGuard } from './guards/auth.guard';
-import { ProfileComponent } from './components/pages/profile/profile.component';
-import { DashboardLayoutComponent } from './components/dashboard-layout/dashboard-layout.component';
+import { authGuard } from './core/guards/auth.guard';
+import { HomeComponent } from './feature/components/home/home.component';
 
 
 const routes: Routes = [
@@ -20,24 +18,12 @@ const routes: Routes = [
 
   {
     path: 'dashboard',
-    component: DashboardLayoutComponent,
+    loadChildren: () =>
+      import('./feature/modules/dashboard-layout/dashboard-layout.module').then(
+        (m) => m.DashboardLayoutModule,
+      ),
     canActivate: [authGuard],
-    children: [
-      {
-        path: '',
-        pathMatch: 'full',
-        component: DashboardComponent,
-      },
-      {
-        path: 'profile',
-        component: ProfileComponent,
-      },
-      {
-        path: 'users',
-        loadChildren: () =>
-          import('./modules/users/users.module').then((m) => m.UsersModule),
-      },
-    ],
+    
   },
 ];
 

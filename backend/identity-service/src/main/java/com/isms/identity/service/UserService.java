@@ -22,17 +22,13 @@ public class UserService {
 
 	@Transactional
 	public UserResponse syncUser(Jwt jwt) {
-
 		String keycloakUserId = jwt.getSubject();
-
 		return userRepository.findByKeycloakUserId(keycloakUserId).map(user -> mapper.map(user, UserResponse.class))
 				.orElseGet(() -> {
-
 					User user = User.builder().keycloakUserId(keycloakUserId).email(jwt.getClaimAsString("email"))
 							.username(jwt.getClaimAsString("preferred_username"))
 							.firstName(jwt.getClaimAsString("given_name")).lastName(jwt.getClaimAsString("family_name"))
 							.build();
-
 					return mapper.map(userRepository.save(user), UserResponse.class);
 				});
 	}
