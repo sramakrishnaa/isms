@@ -1,12 +1,15 @@
+/* @tailwind base; */
 @tailwind components;
 @tailwind utilities;
 
-
-/* .text-primary {
-    color: #3f51b5;
-} */
+html,
+body {
+  height: 100%;
+}
 
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
 }

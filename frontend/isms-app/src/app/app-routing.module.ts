@@ -1,32 +1,35 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { SignupComponent } from './components/auth/signup/signup.component';
-import { SigninComponent } from './components/auth/signin/signin.component';
-import { HomeComponent } from './components/home/home.component';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { DashboardComponent } from './feature/components/dashboard/dashboard.component';
 import { MessageComponent } from './components/common/message/message.component';
+import { authGuard } from './core/guards/auth.guard';
+import { HomeComponent } from './feature/components/home/home.component';
+
 
 const routes: Routes = [
   {
-    path: '', component: HomeComponent
+    path: '',
+    component: HomeComponent,
   },
   {
-    path: 'msg', component: MessageComponent
+    path: 'msg',
+    component: MessageComponent,
   },
-  {
-    path: 'signin', component: SigninComponent
-  },
-  {
-    path: 'signup', component: SignupComponent
-  },
+
   {
     path: 'dashboard',
-    component: DashboardComponent
-  }
+    data: { breadcrumb: 'Dashboard' },
+    loadChildren: () =>
+      import('./feature/modules/dashboard-layout/dashboard-layout.module').then(
+        (m) => m.DashboardLayoutModule,
+      ),
+    canActivate: [authGuard],
+    
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

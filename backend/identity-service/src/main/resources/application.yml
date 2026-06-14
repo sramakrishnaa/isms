@@ -1,23 +1,27 @@
 spring:
-  application:
-    name: identity-service
+    application:
+        name: identity-service
 
-  datasource:
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:password}
-    url: ${DB_URL:jdbc:mysql://localhost:3306/auth_db?createDatabaseIfNotExist=true}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    datasource:
+        username: ${DB_USERNAME:root}
+        password: ${DB_PASSWORD:password}
+        url: ${DB_URL:jdbc:mysql://localhost:3306/auth_db?createDatabaseIfNotExist=true}
+        driver-class-name: com.mysql.cj.jdbc.Driver
 
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-    
+    jpa:
+        show-sql: true
+        hibernate:
+            ddl-auto: update
+    security:
+        oauth2:
+            resourceserver:
+                jwt:
+                    issuer-uri: "http://localhost:8080/realms/isms"
 server:
-  port: ${SERVER_PORT:8080}
+    port: ${SERVER_PORT:8081}
 
-jwt:
-  secret: ${JWT_SECRET:yourSecretKeyMustBeAtLeast256BitsLongForHS256AlgorithmToWorkProperly}
-  access-token-expiration: 900000      # 15 minutes in milliseconds
-  refresh-token-expiration: 604800000  # 7 days in milliseconds
-  absolute-session-expiration: 2592000000  # 30 days in milliseconds
+keycloak:
+  server-url: http://localhost:8080
+  realm: isms
+  client-id: isms-admin
+  client-secret: Iotxxc9utlodzVlBSAMYUDw50sxJJ2R3

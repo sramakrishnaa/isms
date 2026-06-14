@@ -1,52 +1,54 @@
-import { NgModule } from '@angular/core';
+import { inject, NgModule, provideAppInitializer } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { MaterialModule } from './modules/material.module';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { SignupComponent } from './components/auth/signup/signup.component';
-import { SigninComponent } from './components/auth/signin/signin.component';
-import { HomeComponent } from './components/home/home.component';
-import { LogoComponent } from './components/common/logo.component';
-import { HttpClientModule } from '@angular/common/http';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { ErrorMessageComponent } from './components/common/error.component';
+import { ReactiveFormsModule } from '@angular/forms';
+
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { DashboardComponent } from './feature/components/dashboard/dashboard.component';
 import { ErrorStateMatcher } from '@angular/material/core';
-import { ConfigurableErrorStateMatcher } from './components/common/configurable-error-state-matcher';
+import { ConfigurableErrorStateMatcher } from './shared/configurable-error-state-matcher';
+
+import { AuthInterceptor } from './core/interceptors/auth.interceptor';
+import { KeycloakService } from './core/services/keycloak/keycloak.service';
+import { SharedModule } from './shared/modules/shared.module';
 import { MessageComponent } from './components/common/message/message.component';
+import { HomeComponent } from './feature/components/home/home.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SignupComponent,
-    SigninComponent,
-    HomeComponent,
-    LogoComponent,
     DashboardComponent,
-    ErrorMessageComponent,
     MessageComponent,
+    HomeComponent,
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
-    FormsModule,
-    CommonModule,
     AppRoutingModule,
-    MaterialModule,
     HttpClientModule,
-],
+    SharedModule,
+  ],
   providers: [
     {
       provide: ErrorStateMatcher,
-      useFactory: ()=> new ConfigurableErrorStateMatcher("dirtyOrSubmitted")
-      // useClass: GlobalErrorStateMatcher  
-    }
+      useFactory: () => new ConfigurableErrorStateMatcher('dirtyOrSubmitted'),
+      multi: false,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    },
+    provideAppInitializer(() => {
+      const keycloak = inject(KeycloakService);
+      return keycloak.init();
+    }),
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

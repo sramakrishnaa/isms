@@ -5,6 +5,7 @@ type MessageType = 'success' | 'error' | 'warning';
   selector: 'app-message',
   templateUrl: './message.component.html',
   styleUrl: './message.component.css',
+  standalone: false,
 })
 export class MessageComponent {
   message = input<string | null>('sample message');
