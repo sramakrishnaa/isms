@@ -18,6 +18,7 @@ const routes: Routes = [
 
   {
     path: 'dashboard',
+    data: { breadcrumb: 'Dashboard' },
     loadChildren: () =>
       import('./feature/modules/dashboard-layout/dashboard-layout.module').then(
         (m) => m.DashboardLayoutModule,

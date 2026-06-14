@@ -3,7 +3,6 @@ package com.isms.identity.config;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,10 +29,11 @@ public class KeycloakJwtAuthenticationConverter implements Converter<Jwt, Abstra
 
 	private Collection<? extends GrantedAuthority> extractResourceRoles(Jwt jwt) {
 
-		var resourceAccess = new HashMap<>(jwt.getClaim("resource_access"));
-		var eternal = (Map<String, List<String>>) resourceAccess.get("account");
+//		var resourceAccess = new HashMap<>(jwt.getClaim("resource_access"));
+		var realmAccess = new HashMap<>(jwt.getClaim("realm_access"));
+//		var eternal = (Map<String, List<String>>) resourceAccess.get("account");
 
-		var roles = eternal.get("roles");
+		var roles = (List<String>) realmAccess.get("roles");
 
 		return roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.replace("-", "_")))
 				.collect(Collectors.toSet());

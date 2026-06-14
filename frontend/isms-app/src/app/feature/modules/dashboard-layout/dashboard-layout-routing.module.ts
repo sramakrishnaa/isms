@@ -21,6 +21,7 @@ const routes: Routes = [
       },
       {
         path: 'users',
+        data: { breadcrumb: 'Users' },
         loadChildren: () =>
           import('../users/users.module').then(
             (m) => m.UsersModule

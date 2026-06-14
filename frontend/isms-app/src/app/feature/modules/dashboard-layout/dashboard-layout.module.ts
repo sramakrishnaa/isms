@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { SharedModule } from "../../../shared/modules/shared.module";
 import { NavbarComponent } from '../../components/dashboard-layout/navbar/navbar.component';
 import { SidebarComponent } from '../../components/dashboard-layout/sidebar/sidebar.component';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 @NgModule({
   declarations: [DashboardLayoutComponent,NavbarComponent,SidebarComponent],
@@ -25,7 +26,9 @@ import { SidebarComponent } from '../../components/dashboard-layout/sidebar/side
     MatSlideToggleModule,
     DashboardLayoutRoutingModule,
     MatIconModule,
-    SharedModule
+    SharedModule,
+    MatExpansionModule
+
 ],
   exports: [
     MatMenuModule,

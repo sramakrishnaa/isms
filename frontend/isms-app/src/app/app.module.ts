@@ -5,8 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { DashboardComponent } from './feature/components/dashboard/dashboard.component';
@@ -17,9 +16,7 @@ import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { KeycloakService } from './core/services/keycloak/keycloak.service';
 import { SharedModule } from './shared/modules/shared.module';
 import { MessageComponent } from './components/common/message/message.component';
-import { LogoComponent } from './shared/components/logo.component';
 import { HomeComponent } from './feature/components/home/home.component';
-import { AddUserComponent } from './feature/components/add-user/add-user.component';
 
 @NgModule({
   declarations: [

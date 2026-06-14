@@ -16,16 +16,7 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
   styleUrl: './users.component.css',
 })
 export class UsersComponent implements OnInit {
-  displayedColumns: string[] = [
-    'id',
-    'email',
-    // 'username',
-    'firstName',
-    'lastName',
-    // 'emailVerified',
-    // 'enabled',
-    'createdTimestamp',
-  ];
+  displayedColumns: string[] = ['email', 'name','status'];
 
   private pageSize = 5;
   private pageIndex = 0;
@@ -40,8 +31,7 @@ export class UsersComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   // @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private userService: UserService) {
-  }
+  constructor(private userService: UserService) {}
   ngOnInit(): void {
     this.searchSubject
       .pipe(debounceTime(1000), distinctUntilChanged())
@@ -74,9 +64,7 @@ export class UsersComponent implements OnInit {
   applyFilter(event: Event) {
     const value = (event.target as HTMLInputElement).value;
 
-    if (value.trim().length > 0) {
-      this.searchSubject.next(value);
-    }
+    this.searchSubject.next(value.trim());
   }
 
   onPageChange(event: PageEvent) {

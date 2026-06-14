@@ -12,6 +12,9 @@ import { UsersComponent } from '../../components/users/users.component';
 import { DashboardLayoutModule } from "../dashboard-layout/dashboard-layout.module";
 import { AddUserComponent } from '../../components/add-user/add-user.component';
 import { DialogModule } from '../../../shared/modules/dialog.module';
+import { MatCardActions } from '@angular/material/card';
+import { BreadcrumbComponent } from 'xng-breadcrumb';
+
 
 @NgModule({
   declarations: [UsersComponent, AddUserComponent],
@@ -25,7 +28,10 @@ import { DialogModule } from '../../../shared/modules/dialog.module';
     CardModule,
     TableModule,
     DashboardLayoutModule,
-    DialogModule
+    DialogModule,
+    MatCardActions,
+    BreadcrumbComponent
+    
 ],
   exports: [
     MatFormFieldModule,

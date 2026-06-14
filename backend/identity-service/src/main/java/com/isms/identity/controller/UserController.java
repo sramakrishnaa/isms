@@ -2,6 +2,7 @@ package com.isms.identity.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
@@ -37,6 +38,7 @@ public class UserController {
 	private final KeycloakUserService keycloakUserService;
 
 	@GetMapping
+	@PreAuthorize("hasAnyRole('admin')")
 	public ResponseEntity<ApiResponse<PaginationResponse<UserListResponse>>> getAllUsers(
 			@AuthenticationPrincipal Jwt jwt, @RequestParam(defaultValue = "0") int pageIndex,
 			@RequestParam(defaultValue = "5") int pageSize, @RequestParam(required = false) String search) {
