@@ -3,6 +3,7 @@ package com.isms.identity.service;
 import java.util.List;
 
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -11,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import com.isms.identity.dto.request.RegisterRequest;
 import com.isms.identity.dto.response.PaginationResponse;
+import com.isms.identity.dto.response.UserDetailsResponse;
 import com.isms.identity.dto.response.UserListResponse;
+import com.isms.identity.util.KeycloakRoleUtils;
 
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +45,7 @@ public class KeycloakUserService {
 			userRepresentations = getAllUsers().list(pageIndex * pageSize, pageSize);
 			totalCount = getAllUsers().count();
 		}
-
+		
 		List<UserListResponse> list = userRepresentations.stream()
 				.map(user -> UserListResponse.builder().id(user.getId()).username(user.getUsername())
 						.firstName(user.getFirstName()).lastName(user.getLastName()).email(user.getEmail())
@@ -90,6 +93,31 @@ public class KeycloakUserService {
 			response.close();
 		}
 
+	}
+
+	public void updateUserStatus(String userId, boolean enabled) {
+		UserResource resource = keycloak.realm(realm).users().get(userId);
+		UserRepresentation userRepresentation = resource.toRepresentation();
+		userRepresentation.setEnabled(enabled);
+		resource.update(userRepresentation);
+	}
+
+	public UserDetailsResponse getUser(String userId) {
+		UserResource resource = keycloak.realm(realm).users().get(userId);
+		UserRepresentation user = resource.toRepresentation();
+
+		List<String> roles = KeycloakRoleUtils.getBusinessRoles(resource.roles().realmLevel().listEffective());
+		  return UserDetailsResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .emailVerified(Boolean.TRUE.equals(user.isEmailVerified()))
+                .enabled(Boolean.TRUE.equals(user.isEnabled()))
+                .createdTimestamp(user.getCreatedTimestamp())
+                .realmRoles(roles)
+                .build();
 	}
 
 }
