@@ -1,10 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { DashboardComponent } from './feature/components/dashboard/dashboard.component';
-import { MessageComponent } from './components/common/message/message.component';
 import { authGuard } from './core/guards/auth.guard';
-import { HomeComponent } from './feature/components/home/home.component';
-
+import { HomeComponent } from './features/home/pages/home/home.component';
 
 const routes: Routes = [
   {
@@ -12,19 +9,10 @@ const routes: Routes = [
     component: HomeComponent,
   },
   {
-    path: 'msg',
-    component: MessageComponent,
-  },
-
-  {
     path: 'dashboard',
-    data: { breadcrumb: 'Dashboard' },
     loadChildren: () =>
-      import('./feature/modules/dashboard-layout/dashboard-layout.module').then(
-        (m) => m.DashboardLayoutModule,
-      ),
+      import('./core/layout/layout.module').then((m) => m.LayoutModule),
     canActivate: [authGuard],
-    
   },
 ];
 

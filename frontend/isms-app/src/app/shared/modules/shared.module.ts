@@ -1,13 +1,26 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { FormsModule } from '@angular/forms';
-import { LogoComponent } from '../components/logo.component';
+import { NgModule } from '@angular/core';
+
+import { ConfirmationDialogComponent } from '../components/confirmation-dialog/confirmation-dialog.component';
+import { MessageComponent } from '../components/message/message.component';
+import { MaterialModule } from './material.module';
+import { LogoComponent } from '../components/logo/logo.component';
 
 @NgModule({
-  declarations: [LogoComponent],
-  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule],
-  exports: [MatButtonModule, MatIconModule, LogoComponent],
+  declarations: [
+    ConfirmationDialogComponent,
+    MessageComponent,
+    LogoComponent
+  ],
+  imports: [
+    CommonModule,
+    MaterialModule
+  ],
+  exports: [
+    MaterialModule,
+    ConfirmationDialogComponent,
+    MessageComponent, 
+    LogoComponent
+  ]
 })
 export class SharedModule {}

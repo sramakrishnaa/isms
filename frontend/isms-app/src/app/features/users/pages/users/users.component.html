@@ -1,0 +1,188 @@
+<div class="container mx-auto">
+  <mat-card appearance="outlined" class="!bg-white !rounded-lg !border-none">
+    <mat-card-header
+      class="flex flex-col justify-start sm:flex-row sm:items-center sm:justify-between !pt-6 !pb-4 !px-6"
+    >
+      <mat-card-title>Manage Users</mat-card-title>
+      <mat-card-subtitle>Manage Users</mat-card-subtitle>
+
+      <div>
+        <button
+          mat-stroked-button
+          class="m-1 sm:my-2"
+          (click)="openAddUserDialog()"
+        >
+          Add New User
+        </button>
+        <mat-form-field
+          appearance="outline"
+          subscriptSizing="dynamic"
+          class="w-full sm:w-fit sm:my-2 m-1"
+          placeholder="Search"
+        >
+          <mat-label>Search</mat-label>
+          <input matInput (keyup)="applyFilter($event)" #input />
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+      </div>
+    </mat-card-header>
+    <mat-card-content class="overflow-x-auto !px-6 max-h-[calc(100vh-250px)]">
+      <div
+        *ngIf="isLoading()"
+        class="flex flex-col items-center justify-center py-4"
+      >
+        <mat-spinner diameter="45"></mat-spinner>
+      </div>
+
+      <app-message
+        *ngIf="statusMsg()"
+        [message]="statusMsg()?.message"
+        [type]="statusMsg()?.type"
+      ></app-message>
+      <table
+        mat-table
+        [dataSource]="users()"
+        class="w-full !bg-white border border-gray-200 rounded-lg overflow-hidden"
+      >
+        <ng-container matColumnDef="fullName">
+          <th mat-header-cell *matHeaderCellDef>Full Name</th>
+          <td mat-cell *matCellDef="let row">
+            <span> {{ row.firstName }} {{ row.lastName }} </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let row">
+            <div class="flex align-middle gap-1">
+              <span>
+                {{ row.email }}
+              </span>
+              <mat-icon
+                [matTooltip]="row.emailVerified ? 'Verified' : 'Unverified'"
+                class="text-xs !w-auto"
+                [ngClass]="{
+                  'text-green-600': row.emailVerified,
+                  'text-red-600': !row.emailVerified,
+                }"
+              >
+                {{ row.emailVerified ? "verified" : "error_outline" }}
+              </mat-icon>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="username">
+          <th mat-header-cell *matHeaderCellDef>Username</th>
+          <td mat-cell *matCellDef="let row">
+            <span>
+              {{ row.username }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let row">
+            <span
+              [matTooltip]="row.enabled ? 'Active' : 'Disabled'"
+              class="px-3 py-1 rounded-full text-xs font-medium"
+              [ngClass]="{
+                'bg-green-100 text-green-700': row.enabled,
+                'bg-red-100 text-red-700': !row.enabled,
+              }"
+            >
+              {{ row.enabled ? "Active" : "Disabled" }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdDate">
+          <th mat-header-cell *matHeaderCellDef>Created</th>
+
+          <td mat-cell *matCellDef="let row">
+            <span [matTooltip]="row.createdTimestamp | date: 'full'">
+              {{ row.createdTimestamp | date: "shortDate" }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+
+          <td mat-cell *matCellDef="let row">
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="viewUser(row)">
+                <mat-icon>visibility</mat-icon>
+
+                <span>View Details</span>
+              </button>
+
+              <button mat-menu-item>
+                <mat-icon>edit</mat-icon>
+
+                <span>Edit User</span>
+              </button>
+
+              <button mat-menu-item>
+                <mat-icon>lock_reset</mat-icon>
+
+                <span>Reset Password</span>
+              </button>
+
+              <button mat-menu-item (click)="toggleUserStatus(row)">
+                <mat-icon>
+                  {{ row.enabled ? "person_off" : "person" }}
+                </mat-icon>
+
+                <span>
+                  {{ row.enabled ? "Disable User" : "Enable User" }}
+                </span>
+              </button>
+
+              <button mat-menu-item class="text-red-600">
+                <mat-icon class="text-red-600"> delete </mat-icon>
+
+                <span>Delete User</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns; sticky: true"
+          class="!bg-gray-100"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          class="hover:!bg-gray-50 cursor-pointer"
+        ></tr>
+        <tr *matNoDataRow>
+          <td [attr.colspan]="displayedColumns.length" class="py-10">
+            <div class="flex flex-col items-center gap-3 text-gray-500">
+              <mat-icon> search_off </mat-icon>
+
+              <span> No users found </span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <mat-paginator
+        [pageSizeOptions]="[5, 10, 25]"
+        aria-label="Select page of users"
+        class="w-full sm:w-fit my-2 py-2 !bg-white"
+        (page)="onPageChange($event)"
+        [length]="totalUsers()"
+      >
+      </mat-paginator>
+    </mat-card-actions>
+  </mat-card>
+</div>

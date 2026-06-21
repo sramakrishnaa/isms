@@ -7,7 +7,7 @@ import {
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, from, Observable, switchMap, throwError } from 'rxjs';
-import { KeycloakService } from '../services/keycloak/keycloak.service';
+import { KeycloakService } from '../services/keycloak.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
