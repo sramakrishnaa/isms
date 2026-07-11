@@ -1,0 +1,39 @@
+spring:
+    application:
+        name: isms-eureka-server
+
+server:
+    port: 8761
+
+eureka:
+    client:
+        register-with-eureka: false
+        fetch-registry: false
+
+    instance:
+        hostname: localhost
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: health,info,metrics
+
+    endpoint:
+        health:
+            show-details: always
+
+    info:
+        env:
+            enabled: true
+
+info:
+    app:
+        name: ISMS Eureka Server
+        description: Service Registry for Inventory Management System
+        version: 1.0.0
+
+#logging:
+#  level:
+#    com.netflix.eureka: INFO
+#    com.netflix.discovery: INFO

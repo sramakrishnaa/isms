@@ -1,0 +1,35 @@
+spring:
+    application:
+        name: isms-identity-service
+
+    security:
+        oauth2:
+            resourceserver:
+                jwt:
+                    issuer-uri: http://localhost:8080/realms/isms
+
+server:
+    port: ${SERVER_PORT:8081}
+
+keycloak:
+    server-url: http://localhost:8080
+    realm: isms
+    client-id: isms-backend-client
+    client-secret: 7pM4Hbq2jFgbVPThMsw89g5gYOvtrRos
+    default-role: VIEWER
+eureka:
+    client:
+        service-url:
+            defaultZone: http://localhost:8761/eureka/
+        register-with-eureka: true
+        fetch-registry: true
+
+    instance:
+        prefer-ip-address: true
+        instance-id: ${spring.application.name}:${server.port}
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: health,info, metrics

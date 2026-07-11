@@ -1,0 +1,25 @@
+<mat-card appearance="outlined" class="h-full !bg-white !rounded-lg !border-none !shadow-sm">
+  <mat-card-header>
+    <mat-card-subtitle>Personal Information</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-list>
+      <mat-list-item class="!px-0">
+        <span matListItemTitle>Username</span>
+        <span matListItemLine>{{ user.username }}</span>
+      </mat-list-item>
+      <mat-list-item class="!px-0">
+        <span matListItemTitle>Email</span>
+        <span matListItemLine>{{ user.email }}</span>
+      </mat-list-item>
+      <mat-list-item class="!px-0">
+        <span matListItemTitle>First Name</span>
+        <span matListItemLine>{{ user.firstName?user.firstName:"-" }}</span>
+      </mat-list-item>
+      <mat-list-item class="!px-0">
+        <span matListItemTitle>Last Name</span>
+        <span matListItemLine>{{ user.lastName?user.lastName:"-" }}</span>
+      </mat-list-item>
+    </mat-list>
+  </mat-card-content>
+</mat-card>
