@@ -1,53 +1,50 @@
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
-import {
-  AbstractControl,
-  FormBuilder,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { UserService } from '../../services/user.service';
-import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
-import { catchError, EMPTY, filter } from 'rxjs';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { SnackbarService } from '../../../../core/services/snackbar.service';
+import {
+  FormGroup,
+  FormBuilder,
+  Validators,
+  AbstractControl,
+} from '@angular/forms';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { catchError, EMPTY, filter } from 'rxjs';
 import { StatusMessage } from '../../../../core/models/status-message';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
+import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { UserService } from '../../services/user.service';
+import { UserResponse } from '../../models/user-details-response';
 
 @Component({
-  selector: 'app-add-user',
+  selector: 'app-edit-user-details',
   standalone: false,
-  templateUrl: './add-user.component.html',
-  styleUrl: './add-user.component.css',
+  templateUrl: './edit-user-details.component.html',
+  styleUrl: './edit-user-details.component.css',
 })
-export class AddUserComponent implements OnInit {
-  protected userForm!: FormGroup;
+export class EditUserDetailsComponent {
+  protected editUserForm!: FormGroup;
   private readonly dialog = inject(MatDialog);
+  private readonly dialogRef = inject(MatDialogRef<EditUserDetailsComponent>);
+  protected readonly data = inject<UserResponse>(MAT_DIALOG_DATA);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly dialogRef = inject(MatDialogRef<AddUserComponent>);
   private readonly fb = inject(FormBuilder);
   private readonly userService = inject(UserService);
   private readonly snackbarService = inject(SnackbarService);
-  protected readonly userCreateStatus = signal<StatusMessage | null>(null);
+  protected readonly userUpdateStatus = signal<StatusMessage | null>(null);
 
   ngOnInit(): void {
     this.initUserForm();
   }
 
   private initUserForm(): void {
-    this.userForm = this.fb.nonNullable.group({
-      username: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(3),
-          Validators.maxLength(100),
-        ],
-      ],
-
-      email: ['', [Validators.required, Validators.email]],
+    this.editUserForm = this.fb.nonNullable.group({
+      email: [this.data.email, [Validators.required, Validators.email]],
 
       firstName: [
-        '',
+        this.data.firstName,
         [
           Validators.required,
           Validators.minLength(2),
@@ -56,7 +53,7 @@ export class AddUserComponent implements OnInit {
       ],
 
       lastName: [
-        '',
+        this.data.lastName,
         [
           Validators.required,
           Validators.minLength(2),
@@ -67,17 +64,17 @@ export class AddUserComponent implements OnInit {
   }
 
   get f(): { [key: string]: AbstractControl } {
-    return this.userForm.controls;
+    return this.editUserForm.controls;
   }
 
-  saveUser(): void {
-    if (this.userForm.invalid) {
-      this.userForm.markAllAsTouched();
+  saveChanges(): void {
+    if (this.editUserForm.invalid) {
+      this.editUserForm.markAllAsTouched();
       return;
     }
 
     this.userService
-      .addUser(this.userForm.getRawValue())
+      .updateUser(this.data.id, this.editUserForm.getRawValue())
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         catchError((error) => {
@@ -92,14 +89,14 @@ export class AddUserComponent implements OnInit {
   }
 
   private showError(err: any): void {
-    this.userCreateStatus.set({
+    this.userUpdateStatus.set({
       message: err.message,
       type: 'error',
     });
   }
 
   cancel(): void {
-    if (this.userForm.dirty) {
+    if (this.editUserForm.dirty) {
       this.openCancelConfirmationDialog();
       return;
     }

@@ -1,5 +1,8 @@
 package com.isms.identity.service;
 
+import com.isms.identity.exception.KeycloakOperationException;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
@@ -7,23 +10,15 @@ import org.keycloak.admin.client.resource.UsersResource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.isms.identity.exception.KeycloakOperationException;
-
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
-
 @Service
 @RequiredArgsConstructor
 public class KeycloakUserService {
 
+	private final Keycloak keycloak;
 	@Value("${keycloak.realm}")
 	private String realm;
-
 	@Value("${keycloak.client-id}")
 	private String clientId;
-
-	private final Keycloak keycloak;
-
 	private String clientUUID;
 
 	@PostConstruct

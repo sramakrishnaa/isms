@@ -4,10 +4,10 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 export type SnackbarType = 'success' | 'error' | 'warning' | 'info';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SnackbarService {
-  constructor(private snackBar: MatSnackBar) { }
+  constructor(private snackBar: MatSnackBar) {}
 
   success(message: string, duration: number = 3000): void {
     this.show(message, 'success', duration);
@@ -29,13 +29,13 @@ export class SnackbarService {
     message: string,
     type: SnackbarType = 'info',
     duration: number = 3000,
-    action: string = 'Close'
+    action: string = 'Close',
   ): void {
     const config: MatSnackBarConfig = {
       duration: duration,
-      horizontalPosition: 'end',
+      horizontalPosition: 'center',
       verticalPosition: 'top',
-      panelClass: [`snackbar-${type}`]
+      panelClass: [`snackbar-${type}`],
     };
 
     this.snackBar.open(message, action, config);
@@ -45,13 +45,13 @@ export class SnackbarService {
     message: string,
     action: string,
     type: SnackbarType = 'info',
-    duration: number = 5000
+    duration: number = 5000,
   ) {
     const config: MatSnackBarConfig = {
       duration: duration,
-      horizontalPosition: 'end',
+      horizontalPosition: 'center',
       verticalPosition: 'top',
-      panelClass: [`snackbar-${type}`]
+      panelClass: [`snackbar-${type}`],
     };
 
     return this.snackBar.open(message, action, config);

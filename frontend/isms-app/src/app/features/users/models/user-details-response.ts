@@ -1,4 +1,4 @@
-export interface UserDetailsResponse {
+export interface UserResponse {
   id: string;
   username?: string;
   email?: string;
@@ -7,5 +7,5 @@ export interface UserDetailsResponse {
   lastName?: string;
   enabled?: boolean;
   createdTimestamp?: number;
-  realmRoles?: string[];
+  roles?: string[];
 }

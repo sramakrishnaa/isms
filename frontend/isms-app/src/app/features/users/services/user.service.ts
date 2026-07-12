@@ -4,8 +4,7 @@ import { Observable } from 'rxjs';
 import { ApiResponse } from '../../../core/models/api-response';
 import { UserSearchRequest } from '../models/user-search-request';
 import { UserPageResponse } from '../models/user-page-response';
-import { UserDetailsResponse } from '../models/user-details-response';
-
+import { UserResponse } from '../models/user-details-response';
 
 @Injectable({
   providedIn: 'root',
@@ -13,14 +12,6 @@ import { UserDetailsResponse } from '../models/user-details-response';
 export class UserService {
   private baseUrl = 'http://localhost:8081/api/users';
   constructor(private http: HttpClient) {}
-
-  getMe(): Observable<ApiResponse<any>> {
-    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/me`);
-  }
-
-  updateUser(user: any): Observable<ApiResponse<any>> {
-    return this.http.put<ApiResponse<any>>(`${this.baseUrl}/me`, user);
-  }
 
   loadUsers(
     request: UserSearchRequest,
@@ -35,14 +26,27 @@ export class UserService {
     enabled: boolean,
   ): Observable<ApiResponse<any>> {
     return this.http.patch<ApiResponse<any>>(
-      `${this.baseUrl}/${userId}/status`,
+      `${this.baseUrl}/status/${userId}`,
       { enabled: enabled },
     );
   }
 
   getUser(userId: string) {
-    return this.http.get<ApiResponse<UserDetailsResponse>>(
+    return this.http.get<ApiResponse<UserResponse>>(
       `${this.baseUrl}/${userId}`,
     );
+  }
+
+  addUser(data: any): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}`, data);
+  }
+
+  updateUser(userId: string, data: any): Observable<ApiResponse<any>> {
+    return this.http.put<ApiResponse<any>>(`${this.baseUrl}/${userId}`, data);
+    
+  }
+
+  deleteUser(userId: string) {
+    return this.http.delete<ApiResponse<any>>(`${this.baseUrl}/${userId}`);
   }
 }

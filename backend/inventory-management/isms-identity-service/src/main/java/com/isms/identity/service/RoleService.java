@@ -1,26 +1,22 @@
 package com.isms.identity.service;
 
+import com.isms.identity.exception.KeycloakOperationException;
+import jakarta.ws.rs.NotFoundException;
 import java.util.List;
-
+import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.isms.identity.exception.KeycloakOperationException;
-
-import jakarta.ws.rs.NotFoundException;
-import lombok.RequiredArgsConstructor;
-
 @Service
 @RequiredArgsConstructor
 public class RoleService {
 
-	@Value("${keycloak.default-role}")
-	private String defaultRole;
-
 	private final EmailService emailService;
 	private final KeycloakUserService keycloakUserService;
+	@Value("${keycloak.default-role}")
+	private String defaultRole;
 
 	protected List<String> getUserRoles(UserResource resource) {
 		return resource.roles().clientLevel(keycloakUserService.getClientUUID()).listEffective().stream()

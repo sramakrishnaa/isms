@@ -8,8 +8,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 @EnableDiscoveryClient
 public class IsmsApiGatewayApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(IsmsApiGatewayApplication.class, args);
-	}
-
+  public static void main(String[] args) {
+    SpringApplication.run(IsmsApiGatewayApplication.class, args);
+  }
 }

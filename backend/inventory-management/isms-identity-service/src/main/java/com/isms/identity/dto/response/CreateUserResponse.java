@@ -7,6 +7,6 @@ import lombok.Getter;
 @Builder
 public class CreateUserResponse {
 
-	private String id;
-	private String message;
+  private String id;
+  private String message;
 }

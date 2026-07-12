@@ -8,9 +8,9 @@ import lombok.Setter;
 @Setter
 public class AssignRoleRequest {
 
-    @NotBlank(message = "User ID is required")
-    private String userId;
+  @NotBlank(message = "User ID is required")
+  private String userId;
 
-    @NotBlank(message = "Role name is required")
-    private String roleName;
+  @NotBlank(message = "Role name is required")
+  private String roleName;
 }

@@ -7,7 +7,3 @@ export interface ConfirmationDialogData {
 
   confirmButtonColor?: 'primary' | 'accent' | 'warn';
 }
-
-export interface ViewUserDialogData {
-  userId: string;
-}

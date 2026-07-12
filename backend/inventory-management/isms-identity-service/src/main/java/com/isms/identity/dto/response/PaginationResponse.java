@@ -1,7 +1,6 @@
 package com.isms.identity.dto.response;
 
 import java.util.List;
-
 import lombok.Builder;
 import lombok.Getter;
 

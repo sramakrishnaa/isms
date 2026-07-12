@@ -1,37 +1,12 @@
-<h2 mat-dialog-title class="!text-xl !pt-0">Add User</h2>
-
+<h2 mat-dialog-title class="!text-xl !pt-0">Edit User Details</h2>
 <mat-dialog-content class="!pt-4">
   <app-message
-    *ngIf="userCreateStatus()"
-    [message]="userCreateStatus()?.message"
-    [type]="userCreateStatus()?.type"
+    *ngIf="userUpdateStatus()"
+    [message]="userUpdateStatus()?.message"
+    [type]="userUpdateStatus()?.type"
   ></app-message>
 
-  <form [formGroup]="userForm">
-    <mat-form-field
-      appearance="outline"
-      class="w-full mb-3"
-      subscriptSizing="dynamic"
-    >
-      <mat-label>Username</mat-label>
-      <input
-        matInput
-        formControlName="username"
-        autocomplete="username"
-        type="text"
-        maxlength="255"
-        aria-required="true"
-      />
-      <mat-error>
-        <span *ngIf="f['username'].hasError('required')">
-          Username is required
-        </span>
-        <span *ngIf="f['username'].hasError('minlength')">
-          Username must be at least 3 characters long
-        </span>
-      </mat-error>
-    </mat-form-field>
-
+  <form [formGroup]="editUserForm">
     <mat-form-field
       appearance="outline"
       class="w-full mb-3"
@@ -107,15 +82,14 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button type="button" (click)="cancel()">Cancel</button>
-
+  <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
   <button
     mat-flat-button
     color="primary"
     type="button"
-    [disabled]="!userForm.valid"
-    (click)="saveUser()"
+    [disabled]="editUserForm.invalid || !editUserForm.dirty"
+    (click)="saveChanges()"
   >
-    Save
+    Save Changes
   </button>
 </mat-dialog-actions>

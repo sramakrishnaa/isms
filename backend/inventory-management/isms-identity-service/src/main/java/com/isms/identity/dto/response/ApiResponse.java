@@ -9,22 +9,30 @@ import lombok.Getter;
 @Builder
 public class ApiResponse<T> {
 
-	private boolean success;
+  private boolean success;
 
-	private String message;
+  private String message;
 
-	private T data;
+  private T data;
 
-	private LocalDateTime timestamp;
+  private LocalDateTime timestamp;
 
-	public static <T> ApiResponse<T> success(String message, T data) {
+  public static <T> ApiResponse<T> success(String message, T data) {
 
-		return ApiResponse.<T>builder().success(true).message(message).data(data).timestamp(LocalDateTime.now())
-				.build();
-	}
+    return ApiResponse.<T>builder()
+        .success(true)
+        .message(message)
+        .data(data)
+        .timestamp(LocalDateTime.now())
+        .build();
+  }
 
-	public static <T> ApiResponse<T> success(String message) {
+  public static <T> ApiResponse<T> success(String message) {
 
-		return ApiResponse.<T>builder().success(true).message(message).timestamp(LocalDateTime.now()).build();
-	}
+    return ApiResponse.<T>builder()
+        .success(true)
+        .message(message)
+        .timestamp(LocalDateTime.now())
+        .build();
+  }
 }

@@ -14,11 +14,11 @@ export class MessageComponent {
   cssClass = computed(() => {
     switch (this.type()) {
       case 'success':
-        return 'bg-green-200 text-green-700 border-green-300';
+        return 'text-green-700';
       case 'warning':
-        return 'bg-orange-200 text-orange-700 border-orange-300';
+        return 'text-orange-700';
       case 'error':
-        return 'bg-red-200 text-red-700 border-red-300';
+        return 'text-red-700';
       default:
         return '';
     }

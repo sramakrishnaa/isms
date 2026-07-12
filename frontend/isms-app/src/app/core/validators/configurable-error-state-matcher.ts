@@ -24,7 +24,6 @@ export class ConfigurableErrorStateMatcher implements ErrorStateMatcher {
     const submitted = !!form?.submitted;
 
     if (!invalid) return false;
-
     switch (this.mode) {
       case 'dirty':
         return dirty;

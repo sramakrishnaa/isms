@@ -2,6 +2,7 @@ package com.isms.identity.config;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -17,37 +18,50 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableMethodSecurity
 public class SecurityConfiguration {
 
-	@Bean
-	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  @Value("${keycloak.client-id}")
+  private String clientId;
 
-		http.csrf(csrf -> csrf.disable()).cors(Customizer.withDefaults())
-				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authorizeHttpRequests(request -> request.requestMatchers("/actuator/**", "/public/**").permitAll()
-						.anyRequest().authenticated())
-				.oauth2ResourceServer(oauth2 -> oauth2
-						.jwt((jwt -> jwt.jwtAuthenticationConverter(new KeycloakJwtAuthenticationConverter()))));
+  @Bean
+  SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-		return http.build();
-	}
+    http.csrf(csrf -> csrf.disable())
+        .cors(Customizer.withDefaults())
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(
+            request ->
+                request
+                    .requestMatchers("/actuator/**", "/public/**")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated())
+        .oauth2ResourceServer(
+            oauth2 ->
+                oauth2.jwt(
+                    (jwt ->
+                        jwt.jwtAuthenticationConverter(
+                            new KeycloakJwtAuthenticationConverter(clientId)))));
 
-	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
+    return http.build();
+  }
 
-		CorsConfiguration configuration = new CorsConfiguration();
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
 
-		configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+    CorsConfiguration configuration = new CorsConfiguration();
 
-		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+    configuration.setAllowedOrigins(List.of("http://localhost:4200"));
 
-		configuration.setAllowedHeaders(List.of("*"));
+    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 
-		configuration.setAllowCredentials(true);
+    configuration.setAllowedHeaders(List.of("*"));
 
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    configuration.setAllowCredentials(true);
 
-		source.registerCorsConfiguration("/**", configuration);
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-		return source;
-	}
+    source.registerCorsConfiguration("/**", configuration);
 
+    return source;
+  }
 }

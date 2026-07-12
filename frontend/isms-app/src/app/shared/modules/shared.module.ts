@@ -5,22 +5,22 @@ import { ConfirmationDialogComponent } from '../components/confirmation-dialog/c
 import { MessageComponent } from '../components/message/message.component';
 import { MaterialModule } from './material.module';
 import { LogoComponent } from '../components/logo/logo.component';
+import { HomeComponent } from '../../features/home/pages/home/home.component';
+import { LayoutComponent } from '../../core/layout/layout.component';
+import { NavbarComponent } from '../../core/layout/navbar/navbar.component';
+import { SidebarComponent } from '../../core/layout/sidebar/sidebar.component';
 
 @NgModule({
   declarations: [
     ConfirmationDialogComponent,
     MessageComponent,
-    LogoComponent
+    HomeComponent,
   ],
-  imports: [
-    CommonModule,
-    MaterialModule
-  ],
+  imports: [CommonModule, MaterialModule],
   exports: [
     MaterialModule,
     ConfirmationDialogComponent,
-    MessageComponent, 
-    LogoComponent
-  ]
+    MessageComponent,
+  ],
 })
 export class SharedModule {}

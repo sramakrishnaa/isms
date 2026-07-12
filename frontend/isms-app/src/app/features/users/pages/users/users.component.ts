@@ -19,8 +19,10 @@ import { UserSearchRequest } from '../../models/user-search-request';
 import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { SnackbarService } from '../../../../core/services/snackbar.service';
 import { UserService } from '../../services/user.service';
-import { UserListResponse } from '../../models/user-list-response';
 import { UserPageResponse } from '../../models/user-page-response';
+import { Router } from '@angular/router';
+import { UserResponse } from '../../models/user-details-response';
+import { AddUserComponent } from '../../dialog/add-user/add-user.component';
 
 @Component({
   selector: 'app-users',
@@ -31,8 +33,8 @@ import { UserPageResponse } from '../../models/user-page-response';
 export class UsersComponent implements OnInit {
   protected readonly displayedColumns = [
     'fullName',
-    'email',
     'username',
+    'email',
     'status',
     'createdDate',
     'actions',
@@ -41,6 +43,7 @@ export class UsersComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly userService = inject(UserService);
   private readonly snackbarService = inject(SnackbarService);
+  private readonly router = inject(Router);
 
   private readonly pageSize = signal(5);
   private readonly pageIndex = signal(0);
@@ -51,7 +54,7 @@ export class UsersComponent implements OnInit {
   protected readonly isLoading = signal(false);
   protected readonly statusMsg = signal<StatusMessage | null>(null);
 
-  protected readonly users = signal<UserListResponse[]>([]);
+  protected readonly users = signal<UserResponse[]>([]);
 
   private readonly refreshUsers$ = new Subject<void>();
   private readonly searchUsers$ = new Subject<string>();
@@ -59,7 +62,6 @@ export class UsersComponent implements OnInit {
   ngOnInit(): void {
     this.initializeSearch();
     this.initializeLoadUsers();
-
     this.refreshUsers();
   }
 
@@ -88,8 +90,8 @@ export class UsersComponent implements OnInit {
           this.isLoading.set(true);
 
           return this.userService.loadUsers(this.buildRequest()).pipe(
-            catchError(() => {
-              this.showLoadError();
+            catchError((res) => {
+              this.showLoadError(res);
               return EMPTY;
             }),
             finalize(() => this.isLoading.set(false)),
@@ -129,34 +131,31 @@ export class UsersComponent implements OnInit {
     this.statusMsg.set(null);
   }
 
-  private showLoadError(): void {
+  private showLoadError(res: any): void {
     this.users.set([]);
     this.totalUsers.set(0);
-
     this.statusMsg.set({
-      message: 'Failed to load users',
+      message: res.message,
       type: 'error',
     });
   }
 
-  openAddUserDialog(): void {
-    // const dialogRef = this.dialog.open(AddUserComponent, {
-    //   width: '500px',
-    // });
-
-    // dialogRef
-    //   .afterClosed()
-    //   .pipe(filter(Boolean), takeUntilDestroyed(this.destroyRef))
-    //   .subscribe(() => this.refreshUsers());
+  viewUserDetails(user: UserResponse): void {
+    this.router.navigate([`/users/${user.id}`]);
   }
 
-  toggleUserStatus(user: UserListResponse): void {
+  openAddUserDialog(): void {
+    const dialogRef = this.dialog.open(AddUserComponent, {});
+    dialogRef
+      .afterClosed()
+      .pipe(filter(Boolean), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.refreshUsers());
+  }
+
+  toggleUserStatus(user: UserResponse): void {
     const enable = !user.enabled;
-
     const action = enable ? 'Enable' : 'Disable';
-
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '500px',
       data: {
         title: `${action} User`,
         message: `Are you sure you want to ${action.toLowerCase()} ${user.email}?`,
@@ -184,21 +183,42 @@ export class UsersComponent implements OnInit {
                 : u,
             ),
           );
-
           this.snackbarService.show(response.message);
         },
-        error: () => {
-          this.snackbarService.show('Failed to update user status');
+        error: (err) => {
+          this.snackbarService.error(err.message);
         },
       });
   }
 
-  viewUser(user: UserListResponse): void {
-    // this.dialog.open(ViewUserDialogComponent, {
-    //   width: '700px',
-    //   data: {
-    //     userId: user.id,
-    //   },
-    // });
+  deleteUser(user: UserResponse): void {
+    const action = 'Delete';
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: `${action} ${user.email}`,
+        message: `Are you sure you want to permanently ${action.toLowerCase()} ${user.email}?`,
+        confirmButtonText: action,
+        confirmButtonColor: 'warn',
+      },
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this.userService.deleteUser(user.id)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (response) => {
+          console.log(response);
+
+          this.users.update((users) => users.filter((u) => u.id !== user.id));
+          this.snackbarService.show(response.message);
+        },
+        error: () => {
+          this.snackbarService.show('Failed to delete user');
+        },
+      });
   }
 }

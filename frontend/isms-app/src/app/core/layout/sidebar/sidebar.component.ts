@@ -40,7 +40,7 @@ export class SidebarComponent {
       {
         label: 'Users',
         icon: 'group',
-        route: '/dashboard/users',
+        route: '/users',
       },
       {
         label: 'Roles',

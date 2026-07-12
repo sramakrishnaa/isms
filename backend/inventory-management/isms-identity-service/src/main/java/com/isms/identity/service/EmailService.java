@@ -1,15 +1,12 @@
 package com.isms.identity.service;
 
-import java.util.List;
-
-import org.keycloak.admin.client.resource.UserResource;
-import org.springframework.stereotype.Service;
-
 import com.isms.identity.exception.KeycloakOperationException;
 import com.isms.identity.exception.UserNotFoundException;
-
 import jakarta.ws.rs.NotFoundException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.keycloak.admin.client.resource.UserResource;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
