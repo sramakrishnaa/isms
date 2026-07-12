@@ -1,0 +1,92 @@
+<div class="container mx-auto">
+  <mat-card appearance="outlined" class="!bg-white !rounded-lg !border-none">
+    <mat-card-header class="!pt-6 !pb-4 !px-6">
+      <xng-breadcrumb />
+    </mat-card-header>
+    <mat-card-content class="!px-6">
+      <div class="flex flex-col items-center justify-center">
+        <mat-spinner *ngIf="isLoading()" diameter="45"></mat-spinner>
+      </div>
+      <app-message
+        *ngIf="statusMessage()"
+        [message]="statusMessage()?.message"
+        [type]="statusMessage()?.type"
+      ></app-message>
+      <div *ngIf="userDetails() as user">
+        <div class="my-2">
+          <app-user-header [user]="user"></app-user-header>
+        </div>
+
+        <div class="my-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <app-personal-information-card
+            [user]="user"
+          ></app-personal-information-card>
+          <app-account-information-card
+            [user]="user"
+          ></app-account-information-card>
+        </div>
+
+        <div class="my-2">
+          <app-roles-card [user]="user" class="my-4"></app-roles-card>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card
+    *ngIf="userDetails()"
+    appearance="outlined"
+    class="!border-none mt-6 !shadow"
+  >
+    <mat-card-header>
+      <mat-card-subtitle>
+        These actions affect the user's access to the system and may be
+        irreversible.
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="space-y-2 !py-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-medium text-sm">
+              {{ userDetails()?.enabled ? "Disable User" : "Enable User" }}
+            </div>
+
+            <div class="text-xs text-gray-500">
+              {{
+                userDetails()?.enabled
+                  ? "Prevent this user from signing in to the application."
+                  : "Allow this user to sign in again."
+              }}
+            </div>
+          </div>
+
+          <button
+            mat-flat-button
+            [ngClass]="{
+              '!bg-red-600 !text-white': userDetails()?.enabled,
+              '': !userDetails()?.enabled,
+            }"
+          >
+            {{ userDetails()?.enabled ? "Disable User" : "Enable User" }}
+          </button>
+        </div>
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-medium text-sm text-red-700">Delete User</div>
+
+            <div class="text-xs text-gray-500">
+              Permanently remove this user from the system. This action cannot
+              be undone.
+            </div>
+          </div>
+
+          <button mat-stroked-button class="!border-red-600 !text-red-600">
+            Delete Permanently
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

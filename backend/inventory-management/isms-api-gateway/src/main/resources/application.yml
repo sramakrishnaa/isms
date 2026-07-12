@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: isms-api-gateway
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/isms
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+server:
+  port: 8088
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,gateway
+
+  endpoint:
+    health:
+      show-details: always
+
+  info:
+    env:
+      enabled: true
+
+info:
+  application:
+    name: ISMS API Gateway
+    description: API Gateway for Inventory Management System
+    version: 1.0.0
+
+#logging:
+#  level:
+#    root: INFO
+#    org.springframework.cloud.gateway: INFO
+#    org.springframework.security: INFO

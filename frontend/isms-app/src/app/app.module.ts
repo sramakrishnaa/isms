@@ -8,30 +8,30 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { DashboardComponent } from './feature/components/dashboard/dashboard.component';
 import { ErrorStateMatcher } from '@angular/material/core';
-import { ConfigurableErrorStateMatcher } from './shared/configurable-error-state-matcher';
+import { ConfigurableErrorStateMatcher } from './core/validators/configurable-error-state-matcher';
 
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
-import { KeycloakService } from './core/services/keycloak/keycloak.service';
-import { SharedModule } from './shared/modules/shared.module';
-import { MessageComponent } from './components/common/message/message.component';
-import { HomeComponent } from './feature/components/home/home.component';
+import { KeycloakService } from './core/services/keycloak.service';
+import { LayoutComponent } from './core/layout/layout.component';
+import { NavbarComponent } from './core/layout/navbar/navbar.component';
+import { SidebarComponent } from './core/layout/sidebar/sidebar.component';
+import { MaterialModule } from './shared/modules/material.module';
+import { LogoComponent } from './shared/components/logo/logo.component';
+import { AvatarModule } from 'ngx-avatars';
+import { ErrorInterceptor } from './core/interceptors/error.interceptor';
+import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    DashboardComponent,
-    MessageComponent,
-    HomeComponent,
-  ],
+  declarations: [AppComponent, LayoutComponent, NavbarComponent, SidebarComponent,LogoComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
     AppRoutingModule,
     HttpClientModule,
-    SharedModule,
+    MaterialModule,
+    AvatarModule
   ],
   providers: [
     {
@@ -43,6 +43,21 @@ import { HomeComponent } from './feature/components/home/home.component';
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorInterceptor,
+      multi: true,
+    },
+    {
+      provide: MAT_DIALOG_DEFAULT_OPTIONS,
+      useValue: {
+        width: '500px',
+        maxWidth: '95vw',
+        minHeight: '150px',
+        disableClose: true,
+        autoFocus: false
+      }
     },
     provideAppInitializer(() => {
       const keycloak = inject(KeycloakService);

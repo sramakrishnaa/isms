@@ -1,0 +1,16 @@
+<mat-card appearance="outlined" class="h-full !bg-white !rounded-lg !border-none !shadow-sm">
+  <mat-card-header>
+    <mat-card-subtitle>Roles</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="my-2" *ngIf="user.roles?.length == 0">
+      No roles assigned
+    </div>
+
+    <mat-chip-set>
+      <mat-chip *ngFor="let role of user.roles">
+        {{ role }}
+      </mat-chip>
+    </mat-chip-set>
+  </mat-card-content>
+</mat-card>

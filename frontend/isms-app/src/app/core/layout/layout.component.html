@@ -1,0 +1,30 @@
+<mat-toolbar class="navbar sticky top-0 z-50 shadow-sm" color="accent">
+  <div class="container mx-auto w-full flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <button mat-icon-button (click)="sidenav.toggle()">
+        <mat-icon class="text-white">menu</mat-icon>
+      </button>
+      <app-logo></app-logo>
+    </div>
+    <app-navbar [profileName]="_profile()?.firstName+', '+_profile()?.lastName" (openProfile)="openProfile()" (logout)="logout()"></app-navbar>
+  </div>
+</mat-toolbar>
+
+<mat-sidenav-container class="h-[calc(100vh-64px)] !bg-slate-200 py-2">
+  <mat-sidenav
+    #sidenav
+    [mode]="isMobile() ? 'over' : 'side'"
+    [opened]="!isMobile()"
+    [fixedInViewport]="true"
+    fixedTopGap="64"
+    class="  !bg-white !shadow rounded-2xl !max-w-72"
+  >
+    <app-sidebar
+      (navigate)="closeIfMobile(sidenav)"
+    ></app-sidebar>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="px-3">
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,0 +1,24 @@
+<mat-card
+  appearance="outlined"
+  class="h-full !bg-white !rounded-lg !border-none"
+>
+  <mat-card-content>
+    <div
+      class="flex flex-col md:flex-row items-center justify-between mb-6 py-2"
+    >
+      <div>
+        <div class="text-2xl">
+          {{ user.username }}
+        </div>
+        <div class="text-gray-500 text-sm">
+          {{ user.email }}
+        </div>
+      </div>
+      <div class="flex gap-1">
+        <button mat-stroked-button (click)="openEditUserDialog()">Edit Profile</button>
+        <button mat-stroked-button>Assign Roles</button>
+        <button mat-stroked-button>Reset Password</button>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

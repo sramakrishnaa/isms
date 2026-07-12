@@ -1,0 +1,31 @@
+<mat-card
+  appearance="outlined"
+  class="h-full !bg-white !rounded-lg !border-none"
+>
+  <mat-card-header>
+    <mat-card-subtitle>Account Information</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <mat-list>
+      <mat-list-item class="!px-0">
+        <span matListItemTitle>Email Verified</span>
+        <span matListItemLine>
+          {{ user.emailVerified ? "Verified" : "Not Verified" }}
+        </span>
+      </mat-list-item>
+      <mat-list-item class="!px-0">
+        <span matListItemTitle>Status</span>
+        <span matListItemLine>
+          {{ user.enabled ? "Active" : "Disabled" }}
+        </span>
+      </mat-list-item>
+      <mat-list-item class="!px-0">
+        <span matListItemTitle>Created Date</span>
+        <span matListItemLine>
+          {{ user.createdTimestamp | date: "medium" }}
+        </span>
+      </mat-list-item>
+    </mat-list></mat-card-content
+  >
+</mat-card>
