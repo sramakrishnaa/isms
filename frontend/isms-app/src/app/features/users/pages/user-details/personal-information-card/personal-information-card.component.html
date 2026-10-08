@@ -1,0 +1,116 @@
+<mat-card appearance="outlined" class="!bg-white !rounded-lg !border-none">
+  <mat-card-content class="">
+    <div class="w-full sm:w-3/5 md:w-4/5">
+      <mat-grid-list cols="2" rowHeight="60px" class="mb-8">
+        <mat-grid-tile>
+          <div class="w-full">
+            <span>ID</span>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <div class="w-full">
+            <span>{{ user.id }}</span>
+          </div>
+        </mat-grid-tile>
+
+        <mat-grid-tile>
+          <div class="w-full">
+            <span>Created at</span>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <div class="w-full">
+            <span>{{ user.createdTimestamp | date: "short" }}</span>
+          </div>
+        </mat-grid-tile>
+
+        <mat-grid-tile>
+          <div class="w-full">
+            <span>Email Verified</span>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <div class="w-full">
+            <span>{{ user.emailVerified }}</span>
+          </div>
+        </mat-grid-tile>
+      </mat-grid-list>
+
+      <mat-grid-list cols="2" rowHeight="72px">
+        <mat-grid-tile>
+          <div class="w-full">
+            <span>User Name</span>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <div class="w-full">
+            <mat-form-field
+              appearance="outline"
+              subscriptSizing="dynamic"
+              class="w-full"
+            >
+              <input matInput [value]="user.email" disabled />
+            </mat-form-field>
+          </div>
+        </mat-grid-tile>
+
+        <mat-grid-tile>
+          <div class="w-full">
+            <span>Email</span>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <div class="w-full">
+            <mat-form-field
+              appearance="outline"
+              subscriptSizing="dynamic"
+              class="w-full"
+            >
+              <input matInput [value]="user.email" />
+            </mat-form-field>
+          </div>
+        </mat-grid-tile>
+
+        <mat-grid-tile>
+          <div class="w-full">
+            <span>First Name</span>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <div class="w-full">
+            <mat-form-field
+              appearance="outline"
+              subscriptSizing="dynamic"
+              class="w-full"
+            >
+              <input matInput [value]="user.firstName" />
+            </mat-form-field>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <div class="w-full">
+            <span>Last Name</span>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <div class="w-full">
+            <mat-form-field
+              appearance="outline"
+              subscriptSizing="dynamic"
+              class="w-full"
+            >
+              <input matInput [value]="user.lastName" />
+            </mat-form-field>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile></mat-grid-tile>
+        <mat-grid-tile>
+          <div class="w-full flex gap-2">
+            <button mat-flat-button>Save</button>
+            <button mat-stroked-button>Cancel</button>
+          </div>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </div>
+  </mat-card-content>
+</mat-card>

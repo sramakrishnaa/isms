@@ -1,0 +1,65 @@
+<div class="container mx-auto h-dvh">
+  <mat-card
+    appearance="outlined"
+    class="!h-full !bg-white !border-none !rounded-none !rounded-b-lg"
+  >
+    <mat-card-header>
+      <xng-breadcrumb />
+    </mat-card-header>
+
+    <div class="flex flex-col items-center justify-center">
+      <mat-spinner *ngIf="isLoading()" diameter="45"></mat-spinner>
+    </div>
+    <app-message
+      *ngIf="statusMessage()"
+      [message]="statusMessage()?.message"
+      [type]="statusMessage()?.type"
+    ></app-message>
+    <mat-card-content class="!px-6">
+      <div *ngIf="userDetails() as user">
+        <div class="my-2">
+          <app-user-header [user]="user"></app-user-header>
+        </div>
+
+        <nav mat-tab-nav-bar [tabPanel]="tabPanel">
+          <a
+            mat-tab-link
+            routerLink="settings"
+            routerLinkActive
+            #settingsActive="routerLinkActive"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [active]="settingsActive.isActive"
+          >
+            Details
+          </a>
+
+          <a
+            mat-tab-link
+            [routerLink]="['credentials']"
+            routerLinkActive
+            #credentialsActive="routerLinkActive"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [active]="credentialsActive.isActive"
+          >
+            Credentials
+          </a>
+
+          <a
+            mat-tab-link
+            [routerLink]="['role-mapping']"
+            routerLinkActive
+            #roleMappingActive="routerLinkActive"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [active]="roleMappingActive.isActive"
+          >
+            Role Mapping
+          </a>
+        </nav>
+
+        <mat-tab-nav-panel #tabPanel>
+          <router-outlet></router-outlet>
+        </mat-tab-nav-panel>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

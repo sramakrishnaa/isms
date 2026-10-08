@@ -1,0 +1,95 @@
+<h2 mat-dialog-title class="!text-xl !pt-0">Edit User Details</h2>
+<mat-dialog-content class="!pt-4">
+  <app-message
+    *ngIf="userUpdateStatus()"
+    [message]="userUpdateStatus()?.message"
+    [type]="userUpdateStatus()?.type"
+  ></app-message>
+
+  <form [formGroup]="editUserForm">
+    <mat-form-field
+      appearance="outline"
+      class="w-full mb-3"
+      subscriptSizing="dynamic"
+    >
+      <mat-label>Email</mat-label>
+      <input
+        matInput
+        formControlName="email"
+        autocomplete="email"
+        type="email"
+        maxlength="255"
+        aria-required="true"
+      />
+      <mat-error>
+        <span *ngIf="f['email'].hasError('required')">
+          Email address is required
+        </span>
+        <span *ngIf="f['email'].hasError('email')">
+          Please enter a valid email address
+        </span>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field
+      appearance="outline"
+      class="w-full mb-3"
+      subscriptSizing="dynamic"
+    >
+      <mat-label>First Name</mat-label>
+      <input
+        matInput
+        formControlName="firstName"
+        autocomplete="given-name"
+        type="text"
+        maxlength="100"
+        aria-required="true"
+      />
+      <mat-error>
+        <span *ngIf="f['firstName'].hasError('required')">
+          First name is required
+        </span>
+        <span *ngIf="f['firstName'].hasError('minlength')">
+          First name must be at least 2 characters
+        </span>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field
+      appearance="outline"
+      class="w-full mb-3"
+      subscriptSizing="dynamic"
+    >
+      <mat-label>Last Name</mat-label>
+      <input
+        matInput
+        formControlName="lastName"
+        autocomplete="family-name"
+        type="text"
+        maxlength="100"
+        aria-required="true"
+      />
+      <mat-error>
+        <span *ngIf="f['lastName'].hasError('required')">
+          Last name is required
+        </span>
+        <span *ngIf="f['lastName'].hasError('minlength')">
+          Last name must be at least 2 characters
+        </span>
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
+  <button
+    mat-flat-button
+    color="primary"
+    type="button"
+    [disabled]="editUserForm.invalid || !editUserForm.dirty"
+    (click)="saveChanges()"
+  >
+    Save Changes
+  </button>
+</mat-dialog-actions>

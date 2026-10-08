@@ -1,0 +1,38 @@
+<mat-card
+  appearance="outlined"
+  class="!bg-white !rounded-lg !border-none"
+>
+  <mat-card-content>
+    <div
+      class="flex  items-center justify-between mb-6 py-2"
+    >
+      <div class="text-2xl">
+        {{ user.username }}
+      </div>
+
+      <div class="flex align-middle items-center gap-2">
+        <mat-slide-toggle
+          [checked]="user.enabled"
+          [matTooltip]="user.enabled ? 'Disable user' : 'Enable user'"
+          (change)="toggleUserStatus(user)"
+        >
+          <span class="text-base ml-1">
+            {{ user.enabled ? "Enabled" : "Disabled" }}
+          </span>
+        </mat-slide-toggle>
+
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="useractions"
+          matTooltip="Actions"
+
+        >
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #useractions="matMenu">
+          <button mat-menu-item (click)="deleteUser(user)">Delete</button>
+        </mat-menu>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

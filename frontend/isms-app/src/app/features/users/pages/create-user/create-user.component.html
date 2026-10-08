@@ -1,0 +1,190 @@
+<div class="container mx-auto">
+  <mat-card
+    appearance="outlined"
+    class="!h-full !bg-white !border-none !rounded-none !rounded-b-lg"
+  >
+    <mat-card-header>
+      <xng-breadcrumb />
+    </mat-card-header>
+    <mat-card-title class="!px-6 !py-4">Create user</mat-card-title>
+    <mat-card-content class="!p-6">
+      <app-message class="mx-auto"
+        *ngIf="userCreateStatus()"
+        [message]="userCreateStatus()?.message"
+        [type]="userCreateStatus()?.type"
+      />
+
+      <form [formGroup]="userForm" class="w-full sm:w-4/5 md:w-2/4 mx-auto">
+        <section class="mb-9">
+          <div class="mb-2">
+            <h2 class="text-lg font-medium !p-0 !m-0">General</h2>
+            <p class="text-sm text-gray-500 p-0 m-0">
+              Basic information about the user.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 gap-4">
+            <mat-form-field
+              appearance="outline"
+              subscriptSizing="dynamic"
+              class="w-full"
+            >
+              <mat-label>Email</mat-label>
+
+              <input
+                matInput
+                formControlName="email"
+                type="email"
+                maxlength="255"
+                autocomplete="email"
+              />
+              <mat-error>
+                <span *ngIf="f['email'].hasError('required')">
+                  Email address is required
+                </span>
+                <span *ngIf="f['email'].hasError('email')">
+                  Please enter a valid email address
+                </span>
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field
+              appearance="outline"
+              subscriptSizing="dynamic"
+              class="w-full"
+            >
+              <mat-label>First name</mat-label>
+
+              <input
+                matInput
+                formControlName="firstName"
+                type="text"
+                maxlength="100"
+                autocomplete="given-name"
+              />
+              <mat-error>
+                <span *ngIf="f['firstName'].hasError('required')">
+                  First name is required
+                </span>
+                <span *ngIf="f['firstName'].hasError('minlength')">
+                  First name must be at least 2 characters
+                </span>
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field
+              appearance="outline"
+              subscriptSizing="dynamic"
+              class="w-full"
+            >
+              <mat-label>Last name</mat-label>
+
+              <input
+                matInput
+                formControlName="lastName"
+                type="text"
+                maxlength="100"
+                autocomplete="family-name"
+              />
+              <mat-error>
+                <span *ngIf="f['lastName'].hasError('required')">
+                  Last name is required
+                </span>
+                <span *ngIf="f['lastName'].hasError('minlength')">
+                  Last name must be at least 2 characters
+                </span>
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </section>
+
+        <section class="mb-9">
+          <div class="mb-3">
+            <h2 class="text-lg font-medium !p-0 !m-0">Account</h2>
+            <p class="text-sm text-gray-500 p-0 m-0">
+              Configure the initial state of the user account.
+            </p>
+          </div>
+
+          <div class="flex flex-col divide-y gap-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center align-middle gap-1">
+                <span>Enabled</span>
+
+                <mat-icon
+                  class="text-xs text-slate-600"
+                  matTooltip="Allow the user to sign in to ISMS."
+                >
+                  help_outline
+                </mat-icon>
+              </div>
+              <mat-slide-toggle
+                formControlName="enabled"
+                aria-label="Enable user account"
+              />
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center align-middle gap-1">
+                <span>Email verified</span>
+
+                <mat-icon
+                  class="text-xs text-slate-600"
+                  matTooltip="Mark the user's email address as verified."
+                >
+                  help_outline
+                </mat-icon>
+              </div>
+              <mat-slide-toggle
+                formControlName="emailVerified"
+                aria-label="Mark email as verified"
+                (change)="onEmailVerifiedChange($event.checked)"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="mb-4">
+            <h2 class="text-lg font-medium !p-0 !m-0">Required user actions</h2>
+            <p class="text-sm text-gray-500 p-0 m-0">
+              Select the actions the user must complete when they first sign in.
+            </p>
+          </div>
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="w-full"
+          >
+            <mat-label>Required actions</mat-label>
+
+            <mat-select formControlName="requiredActions" multiple>
+              @for (action of requiredUserActions; track action.value) {
+                <mat-option
+                  [value]="action.value"
+                  [matTooltip]="action.description"
+                  matTooltipPosition="before"
+                >
+                  {{ action.label }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </section>
+      </form>
+    </mat-card-content>
+    <mat-card-actions>
+      <div class="w-full sm:w-4/5 md:w-2/4 mx-auto py-4">
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          [disabled]="!userForm.valid"
+          (click)="saveUser()"
+        >
+          Save
+        </button>
+        <button mat-button type="button">Cancel</button>
+      </div>
+    </mat-card-actions>
+  </mat-card>
+</div>

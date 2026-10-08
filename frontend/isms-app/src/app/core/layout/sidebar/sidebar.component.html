@@ -1,0 +1,67 @@
+<mat-nav-list>
+  @for (item of navigationItems; track $index) {
+    @if (item.children) {
+      <div class="px-2 py-1">
+        <div
+          mat-subheader
+          (click)="toggleMenu(item.label)"
+          class="flex items-center justify-between cursor-pointer"
+        >
+          <span class="flex items-center gap-2">
+            <!-- <mat-icon>{{ item.icon }}</mat-icon> -->
+            <span>{{ item.label }}</span>
+          </span>
+          <mat-icon>{{
+            isExpanded(item.label) ? "expand_more" : "chevron_right"
+          }}</mat-icon>
+        </div>
+
+        @for (child of item.children; track child.route) {
+          <div class="px-4 mb-1" *ngIf="isExpanded(item.label)">
+            <a
+              mat-list-item
+              [disableRipple]="true"
+              class="!rounded-lg !p-1"
+              [routerLink]="child.route"
+              routerLinkActive="active-link"
+              #rla="routerLinkActive"
+              [activated]="rla.isActive"
+              [routerLinkActiveOptions]="{
+                exact: child.route === '/dashboard',
+              }"
+              (click)="navigate.emit()"
+            >
+              <mat-icon matListItemIcon>
+                {{ child.icon }}
+              </mat-icon>
+              <span matListItemTitle>
+                {{ child.label }}
+              </span>
+            </a>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="px-2">
+        <a
+          mat-list-item
+          [disableRipple]="true"
+          class="!rounded-lg"
+          [routerLink]="item.route"
+          routerLinkActive="active-link"
+          #rla="routerLinkActive"
+          [activated]="rla.isActive"
+          [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
+          (click)="navigate.emit()"
+        >
+          <mat-icon matListItemIcon>
+            {{ item.icon }}
+          </mat-icon>
+          <span matListItemTitle>
+            {{ item.label }}
+          </span>
+        </a>
+      </div>
+    }
+  }
+</mat-nav-list>

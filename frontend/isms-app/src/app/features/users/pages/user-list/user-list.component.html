@@ -1,0 +1,157 @@
+<div class="container mx-auto">
+  <mat-card
+    appearance="outlined"
+    class="!h-full !bg-white !border-none !rounded-none !rounded-b-lg"
+  >
+    <mat-card-header class="!p-6">
+      <mat-card-title>Users</mat-card-title>
+    </mat-card-header>
+
+    <div class="flex !justify-between px-6 py-4">
+      <div class="flex flex-col items-center align-middle lg:flex-row gap-2">
+        <mat-form-field
+          appearance="outline"
+          subscriptSizing="dynamic"
+          placeholder="Search"
+        >
+          <mat-label>Search</mat-label>
+          <input matInput (keyup)="applyFilter($event)" #input />
+
+          <button mat-icon-button matSuffix>
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+        <div class="w-100 flex justify-between gap-2">
+          <button mat-flat-button (click)="navigateCreateUser()">
+            Add User
+          </button>
+          <button mat-stroked-button>Delete user</button>
+        </div>
+      </div>
+      <div>
+        <mat-paginator
+          #paginator
+          [pageSizeOptions]="[10, 25, 50, 100]"
+          class="!bg-white"
+          aria-label="Select page of users"
+          (page)="onPageChange($event)"
+          [length]="totalUsers()"
+        >
+        </mat-paginator>
+      </div>
+    </div>
+
+    <div
+      *ngIf="isLoading()"
+      class="flex flex-col items-center justify-center py-4"
+    >
+      <mat-spinner diameter="45"></mat-spinner>
+    </div>
+
+    <app-message
+      *ngIf="statusMsg()"
+      [message]="statusMsg()?.message"
+      [type]="statusMsg()?.type"
+    ></app-message>
+
+    <mat-card-content class="!h-full !px-6 overflow-auto">
+      <table mat-table [dataSource]="users()" class="!bg-white">
+        <ng-container matColumnDef="username">
+          <th mat-header-cell *matHeaderCellDef>Username</th>
+          <td mat-cell *matCellDef="let row">
+            <span
+              class="text-blue-600 hover:underline cursor-pointer"
+              (click)="viewUserDetails(row)"
+            >
+              {{ row.username }}
+            </span>
+            <span
+              *ngIf="!row.enabled"
+              class="text-red-600 text-xs p-1"
+            >
+              Disabled
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let row">
+            <div class="flex align-middle items-center">
+              <mat-icon
+                *ngIf="!row.emailVerified"
+                [matTooltip]="'Not Verified'"
+                class="text-red-600 text-base"
+              >
+                error </mat-icon
+              ><span> {{ row.email }} </span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="firstName">
+          <th mat-header-cell *matHeaderCellDef>First Name</th>
+          <td mat-cell *matCellDef="let row">
+            <span>
+              {{ row.firstName }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="lastName">
+          <th mat-header-cell *matHeaderCellDef>Last Name</th>
+          <td mat-cell *matCellDef="let row">
+            <span>
+              {{ row.lastName }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Created at</th>
+          <td mat-cell *matCellDef="let row">
+            <span>
+              {{ row.createdTimestamp | date: "short" }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+
+          <td mat-cell *matCellDef="let row">
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+
+            <mat-menu #menu="matMenu" yPosition="below">
+              <button
+                mat-menu-item
+                class="text-red-600"
+                (click)="deleteUser(row)"
+              >
+                <mat-icon class="text-red-600">delete</mat-icon>
+                <span>Delete User</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns; sticky: true"
+          class="!bg-slate-100"
+        ></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr *matNoDataRow>
+          <td [attr.colspan]="displayedColumns.length" class="py-10">
+            <div class="flex flex-col items-center gap-3 text-gray-500">
+              <mat-icon> search_off </mat-icon>
+              <span> No users found </span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+</div>
