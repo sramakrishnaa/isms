@@ -1,201 +1,229 @@
 package com.isms.identity.service;
 
 import com.isms.identity.dto.request.CreateUserRequest;
+import com.isms.identity.dto.request.RequiredUserAction;
 import com.isms.identity.dto.request.UpdateUserRequest;
 import com.isms.identity.dto.response.PaginationResponse;
+import com.isms.identity.dto.response.UserListItem;
 import com.isms.identity.dto.response.UserResponse;
 import com.isms.identity.exception.InvalidRequestException;
 import com.isms.identity.exception.KeycloakOperationException;
 import com.isms.identity.exception.UserAlreadyExistsException;
 import com.isms.identity.exception.UserNotFoundException;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.ClientErrorException;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.MappingsRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
-  private final KeycloakUserService keycloakUserService;
-  private final RoleService roleService;
-  private final ModelMapper mapper;
-  private final KeycloakUserMapper userMapper;
+	private final KeycloakUserService keycloakUserService;
+	private final RoleService roleService;
+	private final ModelMapper mapper;
+	private final KeycloakUserMapper userMapper;
 
-  // Get users
-  public PaginationResponse<UserResponse> getUsers(int pageIndex, int pageSize, String search) {
-    int offset = validatePageParameters(pageIndex, pageSize);
-    try {
-      UsersResource usersResource = keycloakUserService.users();
-      String trimmedSearch = (search != null) ? search.strip() : null;
-      boolean hasSearch = trimmedSearch != null && !trimmedSearch.isEmpty();
-      List<UserRepresentation> userReps;
-      long totalCount;
-      if (hasSearch) {
-        userReps = usersResource.search(trimmedSearch, offset, pageSize);
-        totalCount = usersResource.count(trimmedSearch);
-      } else {
-        userReps = usersResource.list(offset, pageSize);
-        totalCount = usersResource.count();
-      }
-      List<UserResponse> data =
-          userReps.stream().map(u -> mapper.map(u, UserResponse.class)).toList();
-      return PaginationResponse.<UserResponse>builder().list(data).totalCount(totalCount).build();
+	// Get users
+	public PaginationResponse<UserListItem> getUsers(int pageIndex, int pageSize, String search) {
+		int offset = validatePageParameters(pageIndex, pageSize);
+		try {
+			UsersResource usersResource = keycloakUserService.users();
+			String trimmedSearch = (search != null) ? search.strip() : null;
+			boolean hasSearch = trimmedSearch != null && !trimmedSearch.isEmpty();
+			List<UserRepresentation> userReps;
+			long totalCount;
+			if (hasSearch) {
+				userReps = usersResource.search(trimmedSearch, offset, pageSize);
+				totalCount = usersResource.count(trimmedSearch);
+			} else {
+				userReps = usersResource.list(offset, pageSize);
+				totalCount = usersResource.count();
+			}
+			List<UserListItem> data = userReps.stream().map(u -> mapper.map(u, UserListItem.class)).toList();
+			return PaginationResponse.<UserListItem>builder().list(data).totalCount(totalCount).build();
 
-    } catch (Exception e) {
-      throw new KeycloakOperationException("Failed to fetch users", e);
-    }
-  }
+		} catch (Exception e) {
+			throw new KeycloakOperationException("Failed to fetch users", e);
+		}
+	}
 
-  private int validatePageParameters(int pageIndex, int pageSize) {
-    if (pageIndex < 0) throw new InvalidRequestException("pageIndex must be >= 0");
-    if (pageSize < 1 || pageSize > 200)
-      throw new InvalidRequestException("pageSize must be between 1 and 200");
-    long offsetLong = (long) pageIndex * pageSize;
-    if (offsetLong > Integer.MAX_VALUE)
-      throw new InvalidRequestException("Pagination offset exceeds allowed range");
-    return (int) offsetLong;
-  }
+	private int validatePageParameters(int pageIndex, int pageSize) {
+		if (pageIndex < 0)
+			throw new InvalidRequestException("pageIndex must be >= 0");
+		if (pageSize < 1 || pageSize > 200)
+			throw new InvalidRequestException("pageSize must be between 1 and 200");
+		long offsetLong = (long) pageIndex * pageSize;
+		if (offsetLong > Integer.MAX_VALUE)
+			throw new InvalidRequestException("Pagination offset exceeds allowed range");
+		return (int) offsetLong;
+	}
 
-  // Get a user
-  public UserResponse getUser(String userId) {
-    UserResource resource = keycloakUserService.user(userId);
-    try {
-      UserRepresentation rep = resource.toRepresentation();
-      List<String> roles = roleService.getUserRoles(resource);
-      return userMapper.toUserResponse(rep, roles);
-    } catch (NotFoundException e) {
-      throw new UserNotFoundException("User not found with id: " + userId);
-    } catch (Exception e) {
-      throw new KeycloakOperationException("Failed to fetch user details", e);
-    }
-  }
+	// Get a user
+	public UserResponse getUser(String userId) {
+		UserResource resource = keycloakUserService.user(userId);
 
-  // Create user
-  public String createUser(CreateUserRequest request) {
-    UserRepresentation rep = userMapper.toUserRepresentation(request);
-    try (Response response = keycloakUserService.users().create(rep)) {
-      return switch (response.getStatus()) {
-        case 201 -> {
-          String location = response.getHeaderString("Location");
-          if (location == null)
-            throw new KeycloakOperationException("User created but ID not returned");
-          String userId = location.substring(location.lastIndexOf('/') + 1);
-          roleService.assignDefaultRole(userId);
-          yield userId;
-        }
-        case 409 -> throw new UserAlreadyExistsException("Username or email already exists");
-        case 400 -> throw new KeycloakOperationException("Invalid user details submitted");
-        default ->
-            throw new KeycloakOperationException(
-                "Failed to create user. Status: " + response.getStatus());
-      };
-    } catch (UserAlreadyExistsException | KeycloakOperationException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new KeycloakOperationException("Failed to create user", e);
-    }
-  }
+		try {
 
-  // Update user
-  public void updateUser(String userId, UpdateUserRequest request) {
+			UserRepresentation rep = resource.toRepresentation();
 
-    try {
-      validateUpdateRequest(request);
+			List<CredentialRepresentation> credentials = resource.credentials();
 
-      UserResource resource = keycloakUserService.user(userId);
+			MappingsRepresentation roleMappings = resource.roles().getAll();
 
-      UserRepresentation user = resource.toRepresentation();
+			return userMapper.toUserResponse(rep, roleMappings, credentials);
 
-      boolean emailChanged = updateUserFields(user, request);
+		} catch (NotFoundException e) {
+			throw new UserNotFoundException("User not found with id: " + userId);
+		} catch (Exception e) {
+			throw new KeycloakOperationException("Failed to fetch user details", e);
+		}
+	}
 
-      resource.update(user);
+	// Create user
+	public String createUser(CreateUserRequest request) {
 
-      if (emailChanged) {
-        resource.executeActionsEmail(List.of("VERIFY_EMAIL"));
-      }
+		UserRepresentation user = userMapper.toUserRepresentation(request);
+		try (Response response = keycloakUserService.users().create(user)) {
+			String userId = switch (response.getStatus()) {
+			case 201 -> extractUserId(response);
+			case 409 -> throw new UserAlreadyExistsException("A user with this email address already exists");
+			case 400 -> throw new KeycloakOperationException("Invalid user details submitted");
+			default -> throw new KeycloakOperationException("Failed to create user. Status: " + response.getStatus());
+			};
 
-    } catch (NotFoundException e) {
-      throw new UserNotFoundException("User not found: " + userId);
+			sendUserActionEmail(userId, request);
 
-    } catch (ClientErrorException e) {
+			return userId;
+		} catch (UserAlreadyExistsException | KeycloakOperationException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new KeycloakOperationException("Failed to create user", e);
+		}
 
-      int status = e.getResponse().getStatus();
+	}
 
-      switch (status) {
-        case 400 -> throw new InvalidRequestException("Invalid user update request");
+	private String extractUserId(Response response) {
+		String location = response.getHeaderString("Location");
+		if (location == null || location.isBlank()) {
+			throw new KeycloakOperationException("User created but user ID was not returned");
+		}
+		int lastSlashIndex = location.lastIndexOf('/');
+		if (lastSlashIndex == -1 || lastSlashIndex == location.length() - 1) {
+			throw new KeycloakOperationException("User created but user ID could not be extracted");
+		}
+		return location.substring(lastSlashIndex + 1);
+	}
 
-        case 403 -> throw new KeycloakOperationException("Not authorized to update user", e);
+	private void sendUserActionEmail(String userId, CreateUserRequest request) {
+		if (request.getRequiredActions() == null || request.getRequiredActions().isEmpty()) {
+			return;
+		}
+		List<String> actions = request.getRequiredActions().stream().map(RequiredUserAction::getKeycloakValue).toList();
+		keycloakUserService.users().get(userId).executeActionsEmail(actions);
+	}
 
-        case 409 -> throw new UserAlreadyExistsException("Email already exists");
+	// Update user
+	public void updateUser(String userId, UpdateUserRequest request) {
 
-        default -> throw new KeycloakOperationException("Failed to update user", e);
-      }
+		try {
+			validateUpdateRequest(request);
 
-    } catch (Exception e) {
-      throw new KeycloakOperationException("Failed to update user", e);
-    }
-  }
+			UserResource resource = keycloakUserService.user(userId);
 
-  private void validateUpdateRequest(UpdateUserRequest request) {
-    if (request.getEmail() == null
-        && request.getFirstName() == null
-        && request.getLastName() == null) {
-      throw new InvalidRequestException("At least one field must be provided for update");
-    }
-  }
+			UserRepresentation user = resource.toRepresentation();
 
-  private boolean updateUserFields(UserRepresentation user, UpdateUserRequest request) {
+			boolean emailChanged = updateUserFields(user, request);
 
-    boolean emailChanged = false;
+			resource.update(user);
 
-    if (request.getEmail() != null && !request.getEmail().equalsIgnoreCase(user.getEmail())) {
+			if (emailChanged) {
+				resource.executeActionsEmail(List.of("VERIFY_EMAIL"));
+			}
 
-      user.setEmail(request.getEmail());
-      user.setEmailVerified(false);
+		} catch (NotFoundException e) {
+			throw new UserNotFoundException("User not found: " + userId);
 
-      emailChanged = true;
-    }
+		} catch (ClientErrorException e) {
 
-    if (request.getFirstName() != null) {
-      user.setFirstName(request.getFirstName());
-    }
+			int status = e.getResponse().getStatus();
 
-    if (request.getLastName() != null) {
-      user.setLastName(request.getLastName());
-    }
+			switch (status) {
+			case 400 -> throw new InvalidRequestException("Invalid user update request");
 
-    return emailChanged;
-  }
+			case 403 -> throw new KeycloakOperationException("Not authorized to update user", e);
 
-  // Update user status
-  public void updateUserStatus(String userId, boolean enabled) {
-    UserResource resource = keycloakUserService.user(userId);
-    try {
-      UserRepresentation rep = resource.toRepresentation();
-      rep.setEnabled(enabled);
-      resource.update(rep);
-    } catch (NotFoundException e) {
-      throw new UserNotFoundException("User not found with id: " + userId);
-    } catch (Exception e) {
-      throw new KeycloakOperationException("Failed to update user status", e);
-    }
-  }
+			case 409 -> throw new UserAlreadyExistsException("Email already exists");
 
-  // Delete user
-  public void deleteUser(String userId) {
-    UserResource resource = keycloakUserService.user(userId);
-    try {
-      resource.remove();
-    } catch (NotFoundException e) {
-      throw new UserNotFoundException("User not found: " + userId);
-    } catch (Exception e) {
-      throw new KeycloakOperationException("Failed to delete user", e);
-    }
-  }
+			default -> throw new KeycloakOperationException("Failed to update user", e);
+			}
+
+		} catch (Exception e) {
+			throw new KeycloakOperationException("Failed to update user", e);
+		}
+	}
+
+	private void validateUpdateRequest(UpdateUserRequest request) {
+		if (request.getEmail() == null && request.getFirstName() == null && request.getLastName() == null) {
+			throw new InvalidRequestException("At least one field must be provided for update");
+		}
+	}
+
+	private boolean updateUserFields(UserRepresentation user, UpdateUserRequest request) {
+
+		boolean emailChanged = false;
+
+		if (request.getEmail() != null && !request.getEmail().equalsIgnoreCase(user.getEmail())) {
+
+			user.setEmail(request.getEmail());
+			user.setEmailVerified(false);
+
+			emailChanged = true;
+		}
+
+		if (request.getFirstName() != null) {
+			user.setFirstName(request.getFirstName());
+		}
+
+		if (request.getLastName() != null) {
+			user.setLastName(request.getLastName());
+		}
+
+		return emailChanged;
+	}
+
+	// Update user status
+	public void updateUserStatus(String userId, boolean enabled) {
+		UserResource resource = keycloakUserService.user(userId);
+		try {
+			UserRepresentation rep = resource.toRepresentation();
+			rep.setEnabled(enabled);
+			resource.update(rep);
+		} catch (NotFoundException e) {
+			throw new UserNotFoundException("User not found with id: " + userId);
+		} catch (Exception e) {
+			throw new KeycloakOperationException("Failed to update user status", e);
+		}
+	}
+
+	// Delete user
+	public void deleteUser(String userId) {
+		UserResource resource = keycloakUserService.user(userId);
+		try {
+			resource.remove();
+		} catch (NotFoundException e) {
+			throw new UserNotFoundException("User not found: " + userId);
+		} catch (Exception e) {
+			throw new KeycloakOperationException("Failed to delete user", e);
+		}
+	}
 }

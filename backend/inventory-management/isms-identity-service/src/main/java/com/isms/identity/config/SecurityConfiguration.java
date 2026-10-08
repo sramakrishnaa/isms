@@ -31,10 +31,10 @@ public class SecurityConfiguration {
         .authorizeHttpRequests(
             request ->
                 request
-                    .requestMatchers("/actuator/**", "/public/**")
-                    .permitAll()
+//                    .requestMatchers("/actuator/**", "/public/**")
+//                    .permitAll()
                     .anyRequest()
-                    .authenticated())
+                    .permitAll())
         .oauth2ResourceServer(
             oauth2 ->
                 oauth2.jwt(
@@ -45,23 +45,23 @@ public class SecurityConfiguration {
     return http.build();
   }
 
-  @Bean
-  public CorsConfigurationSource corsConfigurationSource() {
-
-    CorsConfiguration configuration = new CorsConfiguration();
-
-    configuration.setAllowedOrigins(List.of("http://localhost:4200"));
-
-    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-
-    configuration.setAllowedHeaders(List.of("*"));
-
-    configuration.setAllowCredentials(true);
-
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
-    source.registerCorsConfiguration("/**", configuration);
-
-    return source;
-  }
+//  @Bean
+//  public CorsConfigurationSource corsConfigurationSource() {
+//
+//    CorsConfiguration configuration = new CorsConfiguration();
+//
+//    configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+//
+//    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+//
+//    configuration.setAllowedHeaders(List.of("*"));
+//
+//    configuration.setAllowCredentials(true);
+//
+//    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//
+//    source.registerCorsConfiguration("/**", configuration);
+//
+//    return source;
+//  }
 }
